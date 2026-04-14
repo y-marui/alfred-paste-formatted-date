@@ -13,6 +13,11 @@ Direct dates  (year/month/day  or  year-month-day):
     2026/7/9    26/7/9    2026-7-9
     Two-digit years are interpreted as 2000+YY.
 
+Combined form (date spec + format filter, space-separated):
+    -2d ISO        two days ago, ISO formats only
+    2026/7/9 unix  specific date, unix timestamp only
+    +1w YYYY       one week later, formats containing "YYYY"
+
 Anything else is treated as a format filter; today is used as the target.
 
 Returns
@@ -29,16 +34,25 @@ import re
 
 
 def resolve_date(query: str) -> tuple[datetime.datetime, str]:
-    """Return (target_datetime, remaining_filter_query) for the given query."""
+    """Return (target_datetime, remaining_filter_query) for the given query.
+
+    The first whitespace-separated token is tested as a date spec.
+    If it matches, the remainder of the query is returned as the filter.
+    Otherwise the whole query is used as a format filter against today.
+    """
     q = query.strip()
+    if not q:
+        return datetime.datetime.now(), ""
 
-    dt = _try_relative(q)
-    if dt is not None:
-        return dt, ""
+    first, _, rest = q.partition(" ")
 
-    dt = _try_direct_date(q)
+    dt = _try_relative(first)
     if dt is not None:
-        return dt, ""
+        return dt, rest.strip()
+
+    dt = _try_direct_date(first)
+    if dt is not None:
+        return dt, rest.strip()
 
     return datetime.datetime.now(), q
 

@@ -121,6 +121,29 @@ class TestResolveDate:
         _, remaining = resolve_date("YYYY")
         assert remaining == "YYYY"
 
+    # --- combined: date spec + format filter ---
+
+    def test_relative_with_filter(self):
+        dt, remaining = resolve_date("-2d ISO")
+        assert dt.date() == datetime.date.today() - datetime.timedelta(days=2)
+        assert remaining == "ISO"
+
+    def test_direct_date_with_filter(self):
+        dt, remaining = resolve_date("2026/7/9 unix")
+        assert dt.date() == datetime.date(2026, 7, 9)
+        assert remaining == "unix"
+
+    def test_weeks_with_filter(self):
+        dt, remaining = resolve_date("+1w YYYY")
+        assert dt.date() == datetime.date.today() + datetime.timedelta(weeks=1)
+        assert remaining == "YYYY"
+
+    def test_filter_only_is_not_confused_with_date_spec(self):
+        """A plain filter string must not be consumed as a date spec."""
+        dt, remaining = resolve_date("YYYYMMDD")
+        assert dt.date() == datetime.date.today()
+        assert remaining == "YYYYMMDD"
+
 
 class TestAddMonths:
     @pytest.mark.parametrize(
