@@ -56,6 +56,17 @@ class TestDateCommand:
         assert len(data["items"]) == 1
         assert data["items"][0]["arg"].isdigit()
 
+    def test_relative_offset_shows_all_formats(self, capsys):
+        date_cmd.handle("-2d")
+        data = json.loads(capsys.readouterr().out)
+        assert len(data["items"]) == len(date_cmd._FORMATS)
+
+    def test_direct_date_iso_value(self, capsys):
+        date_cmd.handle("2030/1/15")
+        data = json.loads(capsys.readouterr().out)
+        iso_items = [it for it in data["items"] if it["subtitle"] == "YYYY-MM-DD"]
+        assert iso_items[0]["title"] == "2030-01-15"
+
 
 class TestConfigCommand:
     def test_empty_config_shows_no_settings(self, capsys):

@@ -1,7 +1,13 @@
 """date command - list date formats for selection and paste.
 
-Usage in Alfred:  date
-                  date <filter>   — filter by format name or example
+Usage in Alfred:
+    date                  — today in all formats
+    date -2  / -2d        — 2 days ago
+    date +1w              — 1 week later
+    date -3m              — 3 months ago
+    date +1y              — 1 year later
+    date 2026/7/9         — specific date (4- or 2-digit year, / or - separator)
+    date <filter>         — filter by format name or value (e.g. "ISO", "YYYY", "unix")
 """
 
 from __future__ import annotations
@@ -11,6 +17,7 @@ from typing import NamedTuple
 
 from alfred.logger import get_logger
 from alfred.response import item, output
+from app.services.date_resolver import resolve_date
 
 log = get_logger(__name__)
 
@@ -19,7 +26,6 @@ class DateFormat(NamedTuple):
     uid: str
     label: str
     strftime: str | None
-    custom: str | None = None  # used when strftime is not sufficient
 
 
 def _unix_timestamp(dt: datetime.datetime) -> str:
@@ -48,15 +54,15 @@ def _formatted(fmt: DateFormat, dt: datetime.datetime) -> str:
 
 
 def handle(args: str) -> None:
-    """Show date formats; optionally filter by format label or example value."""
+    """Resolve the target date from args, then show matching date formats."""
     log.debug("date command: args=%r", args)
 
-    now = datetime.datetime.now()
-    query = args.strip().lower()
+    target_dt, filter_query = resolve_date(args)
+    query = filter_query.strip().lower()
 
     items = []
     for fmt in _FORMATS:
-        value = _formatted(fmt, now)
+        value = _formatted(fmt, target_dt)
         if query and not (query in fmt.label.lower() or query in value.lower() or query in fmt.uid):
             continue
         items.append(
@@ -73,7 +79,7 @@ def handle(args: str) -> None:
             [
                 item(
                     title=f'No format matches "{args}"',
-                    subtitle="Try: YYYY, MM, DD, unix, ISO ...",
+                    subtitle="Try: YYYY, MM, DD, unix, ISO, -2d, +1w, 2026/7/9 ...",
                     valid=False,
                 )
             ]
