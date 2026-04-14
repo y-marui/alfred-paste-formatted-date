@@ -3,62 +3,69 @@
 from __future__ import annotations
 
 import json
-from unittest.mock import patch
 
-from app.commands import config_cmd, help_cmd, open_cmd, search
+from app.commands import config_cmd, date_cmd, help_cmd
 
 
-class TestSearchCommand:
-    def test_empty_query_returns_prompt(self, capsys):
-        search.handle("")
+class TestDateCommand:
+    def test_empty_query_returns_all_formats(self, capsys):
+        date_cmd.handle("")
         data = json.loads(capsys.readouterr().out)
-        assert data["items"][0]["valid"] is False
-        assert "Type to search" in data["items"][0]["title"]
+        assert len(data["items"]) == len(date_cmd._FORMATS)
 
-    def test_whitespace_only_query_returns_prompt(self, capsys):
-        """Whitespace-only query must be treated as empty."""
-        search.handle("   ")
+    def test_all_items_are_valid(self, capsys):
+        date_cmd.handle("")
         data = json.loads(capsys.readouterr().out)
-        assert "Type to search" in data["items"][0]["title"]
+        assert all(it["valid"] for it in data["items"])
 
-    def test_returns_results(self, capsys):
-        with patch.object(
-            search._service,
-            "search",
-            return_value=[
-                {"id": "1", "title": "Result 1", "subtitle": "Sub", "url": "https://example.com"}
-            ],
-        ):
-            search.handle("query")
+    def test_filter_by_format_label(self, capsys):
+        date_cmd.handle("ISO")
+        data = json.loads(capsys.readouterr().out)
+        assert len(data["items"]) > 0
+        # Each result must match "iso" in its label, value, or uid
+        for it in data["items"]:
+            matches = (
+                "iso" in it["subtitle"].lower()
+                or "iso" in it["title"].lower()
+                or "iso" in it["uid"].lower()
+            )
+            assert matches
 
+    def test_filter_by_format_uid_yyyymmdd(self, capsys):
+        date_cmd.handle("YYYYMMDD")
+        data = json.loads(capsys.readouterr().out)
+        assert len(data["items"]) >= 1
+        assert data["items"][0]["subtitle"] == "YYYYMMDD"
+
+    def test_no_match_returns_error_item(self, capsys):
+        date_cmd.handle("xyzzy-nonexistent")
         data = json.loads(capsys.readouterr().out)
         assert len(data["items"]) == 1
-        assert data["items"][0]["title"] == "Result 1"
+        assert data["items"][0]["valid"] is False
 
-    def test_no_results_returns_empty_message(self, capsys):
-        with patch.object(search._service, "search", return_value=[]):
-            search.handle("noresults")
-
+    def test_arg_equals_title(self, capsys):
+        """The arg (value to paste) must equal the displayed date string."""
+        date_cmd.handle("")
         data = json.loads(capsys.readouterr().out)
-        assert "No results" in data["items"][0]["title"]
+        for it in data["items"]:
+            assert it["arg"] == it["title"]
 
-
-class TestOpenCommand:
-    def test_no_args_shows_all_shortcuts(self, capsys):
-        open_cmd.handle("")
+    def test_unix_timestamp_is_numeric(self, capsys):
+        date_cmd.handle("unix")
         data = json.loads(capsys.readouterr().out)
-        assert len(data["items"]) == len(open_cmd._SHORTCUTS)
+        assert len(data["items"]) == 1
+        assert data["items"][0]["arg"].isdigit()
 
-    def test_filter_by_name(self, capsys):
-        open_cmd.handle("repo")
+    def test_relative_offset_shows_all_formats(self, capsys):
+        date_cmd.handle("-2d")
         data = json.loads(capsys.readouterr().out)
-        titles = [it["title"] for it in data["items"]]
-        assert all("repo" in t for t in titles)
+        assert len(data["items"]) == len(date_cmd._FORMATS)
 
-    def test_unknown_shortcut_shows_error(self, capsys):
-        open_cmd.handle("nonexistent")
+    def test_direct_date_iso_value(self, capsys):
+        date_cmd.handle("2030/1/15")
         data = json.loads(capsys.readouterr().out)
-        assert "No shortcut" in data["items"][0]["title"]
+        iso_items = [it for it in data["items"] if it["subtitle"] == "YYYY-MM-DD"]
+        assert iso_items[0]["title"] == "2030-01-15"
 
 
 class TestConfigCommand:
@@ -76,17 +83,15 @@ class TestConfigCommand:
         assert config_cmd._config.all() == {}
 
     def test_shows_existing_settings(self, capsys):
-        config_cmd._config.set("api_key", "secret")
+        config_cmd._config.set("some_key", "some_value")
         config_cmd.handle("")
         data = json.loads(capsys.readouterr().out)
         titles = [it["title"] for it in data["items"]]
-        assert any("api_key" in t for t in titles)
+        assert any("some_key" in t for t in titles)
 
     def test_unknown_subcommand_shows_current_config(self, capsys):
-        """Unrecognised sub-commands fall through to showing the current config."""
         config_cmd.handle("unknown-subcommand")
         data = json.loads(capsys.readouterr().out)
-        # Should return config view, not crash
         assert len(data["items"]) > 0
 
 
