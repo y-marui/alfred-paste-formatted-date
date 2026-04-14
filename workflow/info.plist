@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>bundleid</key>
-	<string>com.y-marui.alfred-paste-formatted-date</string>
+	<string>com.github.y-marui.alfred-paste-formatted-date</string>
 	<key>connections</key>
 	<dict>
 		<key>0A74E386-905B-4972-9957-6E41393064FD</key>
@@ -20,10 +20,12 @@
 			</dict>
 		</array>
 	</dict>
+	<key>category</key>
+	<string>Productivity</string>
 	<key>createdby</key>
 	<string>Yukihiro Marui</string>
 	<key>description</key>
-	<string>Generate and paste dates in multiple formats.</string>
+	<string>Generate and paste dates in multiple formats</string>
 	<key>disabled</key>
 	<false/>
 	<key>name</key>
