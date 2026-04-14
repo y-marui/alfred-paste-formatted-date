@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>com.example.alfred-workflow-template</string>
+	<key>connections</key>
+	<dict>
+		<key>36381EAF-63DA-4000-AED5-AF6DAF671396</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>D90DBB99-FC05-4BE8-B79B-C4DFD1FE55F9</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>Your Name</string>
+	<key>description</key>
+	<string>Alfred Workflow Template</string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>Workflow Template</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<true/>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>keyword</key>
+				<string>wf</string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string>Loading…</string>
+				<key>script</key>
+				<string>[ "${use_uv:-1}" = "1" ] &amp;&amp; command -v uv &gt;/dev/null 2&gt;&amp;1 &amp;&amp; exec uv run python scripts/entry.py "$1" || exec python3 scripts/entry.py "$1"</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string>Search or configure</string>
+				<key>title</key>
+				<string>Workflow Template</string>
+				<key>type</key>
+				<integer>0</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>36381EAF-63DA-4000-AED5-AF6DAF671396</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>browser</key>
+				<string></string>
+				<key>skipqueryencode</key>
+				<false/>
+				<key>skipvarencode</key>
+				<false/>
+				<key>spaces</key>
+				<string></string>
+				<key>url</key>
+				<string>{query}</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.openurl</string>
+			<key>uid</key>
+			<string>D90DBB99-FC05-4BE8-B79B-C4DFD1FE55F9</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string># Workflow Template
+
+A starting point for building Alfred workflows in Python.
+
+## Usage
+
+* wf &lt;query&gt;  — search
+* wf config   — show current settings
+* wf help     — show available commands
+
+Replace the placeholder commands and API client with your own logic.</string>
+	<key>uidata</key>
+	<dict>
+		<key>36381EAF-63DA-4000-AED5-AF6DAF671396</key>
+		<dict>
+			<key>xpos</key>
+			<real>300</real>
+			<key>ypos</key>
+			<real>15</real>
+		</dict>
+		<key>D90DBB99-FC05-4BE8-B79B-C4DFD1FE55F9</key>
+		<dict>
+			<key>xpos</key>
+			<real>500</real>
+			<key>ypos</key>
+			<real>15</real>
+		</dict>
+	</dict>
+	<key>userconfigurationconfig</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<true/>
+				<key>required</key>
+				<false/>
+				<key>text</key>
+				<string>Use uv instead of python3 when available</string>
+			</dict>
+			<key>description</key>
+			<string>When enabled and uv is installed, scripts and vendor installs run via uv. Recommended when the workflow depends on non-standard libraries (workflow/vendor/).</string>
+			<key>label</key>
+			<string>Use uv</string>
+			<key>type</key>
+			<string>checkbox</string>
+			<key>variable</key>
+			<string>use_uv</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>WARNING</string>
+				<key>options</key>
+				<array>
+					<string>DEBUG</string>
+					<string>INFO</string>
+					<string>WARNING</string>
+					<string>ERROR</string>
+				</array>
+				<key>required</key>
+				<false/>
+			</dict>
+			<key>description</key>
+			<string>Verbosity of workflow logs written to ~/Library/Logs/Alfred/Workflow/. Use DEBUG during development, WARNING in production.</string>
+			<key>label</key>
+			<string>Log Level</string>
+			<key>type</key>
+			<string>select</string>
+			<key>variable</key>
+			<string>log_level</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>300</string>
+				<key>required</key>
+				<false/>
+			</dict>
+			<key>description</key>
+			<string>How long (in seconds) API responses are cached on disk. Increase for slower-changing data; decrease for real-time results.</string>
+			<key>label</key>
+			<string>Cache TTL (seconds)</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>cache_ttl</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>https://api.example.com/v1</string>
+				<key>required</key>
+				<false/>
+			</dict>
+			<key>description</key>
+			<string>Base URL for the external API. Replace with your actual API endpoint.</string>
+			<key>label</key>
+			<string>API Base URL</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>api_base_url</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>5</string>
+				<key>required</key>
+				<false/>
+			</dict>
+			<key>description</key>
+			<string>HTTP request timeout in seconds. Increase if the API is slow; decrease to fail faster.</string>
+			<key>label</key>
+			<string>API Timeout (seconds)</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>api_timeout</string>
+		</dict>
+	</array>
+	<key>version</key>
+	<string>0.1.0</string>
+	<key>webaddress</key>
+	<string>https://github.com/yourname/your-workflow</string>
+</dict>
+</plist>
