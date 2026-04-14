@@ -1,134 +1,85 @@
-# Alfred Workflow Template
+# Paste Formatted Date
 
 > **This is the English (reference) version.**
 > For the Japanese canonical version, see [README-jp.md](README-jp.md).
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-<!-- TODO: Replace the CI badge URL (both href and src) with your repository URL. See "Customizing this template" below. -->
-[![CI](https://github.com/y-marui/alfred-workflow-template/actions/workflows/ci.yml/badge.svg)](https://github.com/y-marui/alfred-workflow-template/actions/workflows/ci.yml)
-[![Charter Check](https://github.com/y-marui/alfred-workflow-template/actions/workflows/dev-charter-check.yml/badge.svg)](https://github.com/y-marui/alfred-workflow-template/actions/workflows/dev-charter-check.yml)
+[![CI](https://github.com/y-marui/alfred-paste-formatted-date/actions/workflows/ci.yml/badge.svg)](https://github.com/y-marui/alfred-paste-formatted-date/actions/workflows/ci.yml)
 
-| Field | Value |
+Generate and paste today's date in multiple formats via Alfred 5.
+
+## Usage
+
+Type `date` in Alfred to see all available formats. Select one to copy and auto-paste it.
+
+```
+date             — list all formats
+date <filter>    — filter by format name or value (e.g. "ISO", "YYYY", "unix")
+date config      — view or reset configuration
+date help        — show available commands
+```
+
+### Available formats
+
+| Format | Example |
 |---|---|
-| Target | Alfred 5 Script Filter workflow |
-| Team size | Individual to small team (1–3 people) |
-| Language | English (OSS) |
-| License | MIT |
-| Runtime | Python 3.9+, Alfred 5 |
-| AI tools | Claude Code / GitHub Copilot / Gemini CLI |
-
-> Production-ready template for building Alfred 5 Script Filter workflows.
-> Start shipping in 10 minutes.
-
-## Features
-
-- ✅ **Layered architecture** — Alfred boundary isolated from business logic
-- ✅ **Lightweight Alfred SDK** — response builder, router, cache, config, logger
-- ✅ **Command-based UX** — `wf search`, `wf open`, `wf config`, `wf help`
-- ✅ **Full test suite** — pytest, no Alfred required to run tests
-- ✅ **CI/CD** — lint, test, build, and release via GitHub Actions
-- ✅ **Vendor packaging** — third-party deps bundled in `vendor/`
-- ✅ **AI-ready** — `AI_CONTEXT.md` + `CLAUDE.md` for AI assistant context
+| YYYYMMDD | 20260414 |
+| YYMMDD | 260414 |
+| YYYY-MM-DD | 2026-04-14 |
+| YYYY/MM/DD | 2026/04/14 |
+| MM/DD/YYYY | 04/14/2026 |
+| DD/MM/YYYY | 14/04/2026 |
+| MMM DD, YYYY | Apr 14, 2026 |
+| MMMM DD, YYYY | April 14, 2026 |
+| YYYY-MM-DDThh:mm:ss | 2026-04-14T12:00:00 |
+| Unix timestamp | 1744588800 |
 
 ## Requirements
 
 - Alfred 5 (Powerpack required for Script Filter)
 - Python 3.9+
-- [pre-commit](https://pre-commit.com/) (for security hooks)
 
-## Quick Start (developers)
+## Installation
+
+Download the latest `.alfredworkflow` from [Releases](https://github.com/y-marui/alfred-paste-formatted-date/releases) and double-click to install.
+
+## Development
 
 ```bash
-git clone https://github.com/yourname/alfred-workflow-template
-cd alfred-workflow-template
-
 # Install dev dependencies
 make install
 
 # Simulate Alfred locally
-make run Q="search foo"
-make run Q="help"
+make run Q=""
+make run Q="ISO"
 
 # Run tests
 make test
 
 # Build workflow package
 make build
-# → dist/workflow-template-0.1.0.alfredworkflow
-```
-
-Double-click `dist/*.alfredworkflow` to install in Alfred.
-
-## Usage
-
-```
-wf <query>           search (default)
-wf search <query>    search
-wf open <name>       open a named shortcut
-wf config            view / reset settings
-wf help              show all commands
+# → dist/alfred-paste-formatted-date-0.1.0.alfredworkflow
 ```
 
 ## Project Structure
 
 ```
-alfred-workflow-template/
+alfred-paste-formatted-date/
 ├── src/
 │   ├── alfred/         # Alfred SDK (response, router, cache, config, logger, safe_run)
-│   └── app/            # Application layer (commands, services, clients)
+│   └── app/            # Application layer (commands)
 ├── workflow/           # Alfred package (info.plist, scripts/entry.py, vendor/)
 ├── tests/              # pytest test suite
 ├── scripts/            # build.sh, dev.sh, release.sh, vendor.sh
-└── docs/               # Architecture, development, and usage documentation
-```
-
-## Documentation
-
-| Document | Description |
-|---|---|
-| [docs/architecture.md](docs/architecture.md) | Full architecture and layer design |
-| [docs/development.md](docs/development.md) | Adding commands, managing dependencies, release |
-| [docs/usage.md](docs/usage.md) | End-user usage guide |
-
-## AI-Assisted Development
-
-This template is configured for AI-assisted development.
-
-| Tool | Role |
-|---|---|
-| Claude Code | Architecture, large-scale changes, refactoring |
-| GitHub Copilot | Bug fixes, small implementation, unit tests |
-| Gemini CLI | Documentation management |
-
-See [`AI_CONTEXT.md`](AI_CONTEXT.md) and [`CLAUDE.md`](CLAUDE.md) for session context.
-
-## Customizing This Template
-
-1. Edit `workflow/info.plist`:
-   - Replace `bundleid` with your bundle ID (`com.yourname.workflowname`)
-   - Replace the `keyword` (`wf`) with your trigger keyword
-   - Run `uuidgen` and replace the placeholder UIDs
-2. Replace `src/app/clients/api_client.py` with your API
-3. Update the workflow name in `pyproject.toml`
-4. Update shortcuts in `src/app/commands/open_cmd.py`
-5. Add your `workflow/icon.png`
-
-## Release
-
-```bash
-# 1. Bump version in pyproject.toml
-# 2. Tag and push
-git tag v1.2.3
-git push --tags
-# GitHub Actions builds .alfredworkflow and creates a GitHub Release
+└── docs/               # Architecture and development documentation
 ```
 
 ## Support
 
-If this template saves you time, support is appreciated.
+If this workflow saves you time, support is appreciated.
 
-- [Buy Me a Coffee](https://www.buymeacoffee.com/YOUR_USERNAME)
-- [GitHub Sponsors](https://github.com/sponsors/YOUR_USERNAME)
+- [Buy Me a Coffee](https://www.buymeacoffee.com/y.marui)
+- [GitHub Sponsors](https://github.com/sponsors/y-marui)
 
 ## License
 
