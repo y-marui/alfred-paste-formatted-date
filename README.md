@@ -5,6 +5,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![CI](https://github.com/y-marui/alfred-paste-formatted-date/actions/workflows/ci.yml/badge.svg)](https://github.com/y-marui/alfred-paste-formatted-date/actions/workflows/ci.yml)
+[![Charter Check](https://github.com/y-marui/alfred-paste-formatted-date/actions/workflows/dev-charter-check.yml/badge.svg)](https://github.com/y-marui/alfred-paste-formatted-date/actions/workflows/dev-charter-check.yml)
 
 Generate and paste today's date in multiple formats via Alfred 5.
 
