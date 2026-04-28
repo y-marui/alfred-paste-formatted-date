@@ -17,6 +17,7 @@ dev-charter の各ドキュメントへのインデックス。
 | AI の作業前チェック、エラー対処、AI 役割分担、複数 AI 連携 | `AI_COLLABORATION_RULES.md` |
 | AI コンテキストの優先順位（タスク > プロジェクト > 憲章 > グローバル） | `AI_CONTEXT_HIERARCHY.md` |
 | CLAUDE.md・GEMINI.md・AI_CONTEXT.md の構成方法 | `AI_TOOL_SETUP.md` |
+| docs/ 構成、file-map.md、architecture.md、AI_CONTEXT.md 参照順、CONTRIBUTING.md | `DOCS_STRUCTURE.md` |
 | 言語選択（日本語・英語）、ドキュメントの正本、セクションヘッダ言語 | `LANGUAGE_POLICY.md` |
 | ライセンス選択（MIT・GPL・AGPL・CC）、著作権表記 | `LEGAL_POLICY.md` |
 | シークレット管理、git フック、pre-commit、セキュリティ設定 | `SECURITY_POLICY.md` |
@@ -31,5 +32,5 @@ dev-charter の各ドキュメントへのインデックス。
 | OSS コントリビューション、Issue テンプレート、PR テンプレート、準 CLA | `topics/GITHUB_CONTRIBUTING.md` |
 | README の構成（テンプレートから作成したプロジェクト用） | `topics/PROJECT_README_GUIDELINES.md` |
 | README の構成（テンプレートリポジトリ自体の設計） | `topics/TEMPLATE_README_GUIDELINES.md` |
-| Python 開発環境、pyenv、uv、ruff、mypy、pytest | `topics/PYTHON_DEV_ENV.md` |
+| Python 開発環境、pyenv、uv、ruff、mypy、pytest、py.typed、PEP 561 | `topics/PYTHON_DEV_ENV.md` |
 | Python CLI、typer、pydantic-settings、XDG 設定ファイル | `topics/PYTHON_CLI.md` |
