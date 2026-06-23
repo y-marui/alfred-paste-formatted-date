@@ -1,1 +1,3 @@
-Read `AI_CONTEXT.md` at the project root for full project context and rules.
+# GitHub Copilot Instructions
+
+`AI_CONTEXT.md` を参照。
