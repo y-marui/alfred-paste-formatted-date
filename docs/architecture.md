@@ -114,7 +114,7 @@ The entire `.build/` directory is zipped to `dist/<name>-<version>.alfredworkflo
 Alfred 5 の Configuration Builder は `info.plist` の `userconfigurationconfig` キーで定義する。
 利用可能な全型・各キーの詳細は [`docs/configuration-builder.md`](configuration-builder.md) を参照。
 
-### 変数の受け渡し
+### Variable Passing
 
 Alfred はスクリプト実行時に各 `variable` を環境変数として渡す。
 インストール直後は `prefs.plist` が存在しないため変数は未セットになる場合がある。
@@ -133,7 +133,7 @@ value = os.environ.get("my_variable", "fallback")
 **注意:** `checkbox` 型の unchecked 値は `"0"` ではなく空文字 `""` になる。
 `[ "$var" = "1" ]` で判定し、`"0"` との比較は避けること。
 
-### `variables` / `prefs.plist` / `default` の関係
+### Relationship Between `variables`, `prefs.plist`, and `default`
 
 | 場所 | 役割 |
 |---|---|
