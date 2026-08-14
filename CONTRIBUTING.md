@@ -56,10 +56,4 @@ refactor: simplify router dispatch logic
 
 ## Pull Request checklist
 
-- [ ] `make lint` passes
-- [ ] `make typecheck` passes
-- [ ] `make test` passes
-- [ ] `make build` succeeds
-- [ ] New commands have tests
-- [ ] `docs/usage.md` updated if user-facing changes
-- [ ] `CHANGELOG.md` entry added under `[Unreleased]`
+See [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) for the current checklist.

@@ -11,7 +11,7 @@
 
 Alfred 5 から今日の日付を複数のフォーマットで生成・貼り付けするワークフロー。
 
-## 使い方
+## Usage
 
 Alfred で `date` と入力するとフォーマット一覧が表示されます。選択すると自動的に貼り付けられます。
 
@@ -22,7 +22,7 @@ date config      — 設定の確認 / リセット
 date help        — コマンド一覧を表示
 ```
 
-### 利用可能なフォーマット
+### Available formats
 
 | フォーマット | 例 |
 |---|---|
@@ -37,16 +37,16 @@ date help        — コマンド一覧を表示
 | YYYY-MM-DDThh:mm:ss | 2026-04-14T12:00:00 |
 | Unix timestamp | 1744588800 |
 
-## 動作環境
+## Requirements
 
 - Alfred 5（Script Filter には Powerpack が必要）
 - Python 3.9+
 
-## インストール
+## Installation
 
 [Releases](https://github.com/y-marui/alfred-paste-formatted-date/releases) から最新の `.alfredworkflow` をダウンロードしてダブルクリックでインストールします。
 
-## 開発
+## Development
 
 ```bash
 # 開発用依存関係をインストール
@@ -64,7 +64,7 @@ make build
 # → dist/alfred-paste-formatted-date-0.1.0.alfredworkflow
 ```
 
-## プロジェクト構成
+## Project Structure
 
 ```
 alfred-paste-formatted-date/
@@ -77,7 +77,7 @@ alfred-paste-formatted-date/
 └── docs/               # アーキテクチャ・開発ドキュメント
 ```
 
-## ライセンス
+## License
 
 MIT — [LICENSE](LICENSE) を参照
 

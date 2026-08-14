@@ -26,21 +26,21 @@ scripts/        ← build.sh / dev.sh / release.sh / vendor.sh
 
 ## Applied Charter Principles
 
-### AIコンテキスト優先順位（AI_CONTEXT_HIERARCHY）
+### AI Context Priority (AI_CONTEXT_HIERARCHY)
 
 1. タスクコンテキスト（Issue / Pull Request）
 2. **プロジェクトコンテキスト（このファイル・プロジェクトドキュメント）** ← ここ
 3. 開発憲章（`docs/dev-charter/`）
 4. グローバルコンテキスト
 
-### 開発原則（PRINCIPLES）
+### Development Principles (PRINCIPLES)
 
-#### 基本哲学
+#### Basic Philosophy
 - **ローカルファースト** — Alfred ワークフローはオフラインで動作することを前提にする
 - **インフラ最小化** — サーバーレス、外部依存なし（vendor/ に完結）
 - **小さく始める** — 機能追加は必要性が確認されてから
 
-#### コード設計
+#### Code Design
 - **変更範囲は必要最小限** — Over-engineering しない
 - **YAGNI** — 今必要ない機能は実装しない
 - **DRY** — 2回の重複では抽象化しない。3回目で検討する
@@ -48,13 +48,13 @@ scripts/        ← build.sh / dev.sh / release.sh / vendor.sh
 - **TODO/FIXME を残さない** — 実装するか、Issue として記録する（テンプレートの `# TODO:` コメントは「ユーザーが置き換える場所の目印」として例外的に許可）
 - **既存パターンに従う** — 命名規則・アーキテクチャ・ディレクトリ構造を統一する
 
-### AI協働ルール（AI_COLLABORATION_RULES）
+### AI Collaboration Rules (AI_COLLABORATION_RULES)
 
-#### AI行動原則
+#### AI Behavior Principles
 - **Scope 厳守** — 会話のタスク・ゴールを AI が勝手に変更しない
 - **不明点は作業前に1回でまとめて質問する** — 重要な情報不足や曖昧さは質問する。軽微な不足は合理的な仮定で補い、仮定を明示する。推測で断定しない
 
-#### コーディング前の確認必須項目
+#### Required Confirmations Before Coding
 - ゴール（完了条件）
 - 言語・FW・バージョン制約
 - 新規 or 既存コード修正
@@ -63,22 +63,22 @@ scripts/        ← build.sh / dev.sh / release.sh / vendor.sh
 
 確認不要（既存コードに合わせて進める）: コードスタイル / ファイル配置 / 軽微な実装詳細
 
-#### エラー対応
+#### Error Handling
 - **原因分析 → 修正方針説明 → 実装** の順で進める
 - エラーログ・スタックトレースは全文確認してから対応
 - 推測で修正しない（必要なら既存コードを確認する）
 - デバッグ用の `print` 文は本番コードに残さない
 
-#### 作業スタンス
+#### Work Stance
 - 大きな変更前に方針を説明してから着手する
 - **不要な依存追加禁止** — 既存の依存で解決できないか先に検討する
 
-#### ドキュメント同期ルール（Document Sync Rule）
+#### Document Sync Rule
 
 仕様・ルール・構成に変更が生じたとき、変更と同じ作業内で関連ドキュメントを更新する。
 対象は docs/ 内のファイルに限らず、AI_CONTEXT.md・README.md 等のルートファイルも含む。
 
-#### 憲章の参照方法（Charter Lookup）
+#### Charter Lookup
 
 不明点が憲章に関係する場合は**全ファイルを検索せず**、以下の手順で参照する:
 
@@ -96,7 +96,7 @@ Issue を作成する場合は、必ずリポジトリオーナーを `assignee`
 gh issue create --title "..." --body "..." --assignee @me
 ```
 
-### 言語ポリシー（LANGUAGE_POLICY）
+### Language Policy (LANGUAGE_POLICY)
 
 OSS プロジェクトのため、**公開面は英語を主言語**とする。
 **日本語版が編集の起点（正本）であり、英語版はその翻訳として同期する。**
@@ -115,40 +115,40 @@ OSS プロジェクトのため、**公開面は英語を主言語**とする。
 
 両言語ファイルが存在する場合: **日本語を正本として編集し、英語はそれに合わせて同一コミットで更新する**。
 
-### プロジェクトライフサイクル（PROJECT_LIFECYCLE）
+### Project Lifecycle (PROJECT_LIFECYCLE)
 
 - 規模: 個人〜3人。アジャイルで迅速な意思決定
 - **コミット粒度** — 機能単位・動作確認 OK 後にコミット
 - **コミットメッセージ** — Conventional Commits 形式（feat / fix / refactor / docs / chore）
 - **WIP 禁止** — 動作しないコードはコミットしない
 
-### セキュリティ（SECURITY_POLICY）
+### Security (SECURITY_POLICY)
 
-#### 二層構造
+#### Two-Layer Structure
 1. **個人 git フック**（`~/.config/git/hooks/pre-commit`）— 開発者個人のマシン全体に適用
 2. **per-repo pre-commit フック**（`.pre-commit-config.yaml`）— チーム強制・CI でも動作
 
-#### 自動ブロック項目
+#### Automatically Blocked Items
 - `anonymous` のままコミット（個人 git フック側で対応。per-repo フックでは検知しない）
 - `.env` ファイルのコミット（`.env.example` は許可）
 - SSH 秘密鍵・クラウドトークン（gitleaks で検知）
 - ローカル絶対パスのハードコード（環境依存コードの防止。`.md`・`docs/` は allowlist で除外）
 - 500 KB を超えるファイル
 
-#### 手動遵守事項
+#### Manual Compliance Items
 - API キー・パスワードをコードに書かない（Alfred の暗号化キーチェーンを使う）
 - 誤ってコミットしたシークレットは、履歴から削除した上で即座にローテーションする
 - AI に秘密情報を含むファイルやコードを渡さない
 - AI が生成したコードは必ずレビューしてからコミットする
 - AI との会話ログをリポジトリにコミットしない
 
-#### コードレビュー
+#### Code Review
 - `main` に到達するコミットは可能な限り他の開発者がレビューする（個人開発の場合は PR を経由してセルフレビューする）
 - 認証・認可・暗号化・データアクセスに関わる変更はセキュリティレビューを必須とする
 
 詳細: `SECURITY.md`、`docs/dev-charter/SECURITY_POLICY.md`
 
-### UIガイドライン（UI_GUIDELINES）
+### UI Guidelines (UI_GUIDELINES)
 
 Alfred Script Filter のレスポンス（JSON items）に適用するルール:
 
@@ -157,7 +157,7 @@ Alfred Script Filter のレスポンス（JSON items）に適用するルール:
 - アイコンは `workflow/icon.png` で制御する（PNG ファイル）
 - 外観モード（ライト/ダーク）は Alfred が制御するため、ワークフロー側での対応は不要
 
-### マネタイズ（MONETIZATION_POLICY）
+### Monetization (MONETIZATION_POLICY)
 
 OSS プロジェクトのため、以下の方式を採用:
 
@@ -167,7 +167,7 @@ OSS プロジェクトのため、以下の方式を採用:
 サポートセクションは README に設けず、バッジ（GitHub Sponsors・Buy Me a Coffee）で代替する。バッジは Charter Check バッジの後に配置する。
 マネタイズを本格検討する場合は `MONETIZATION.md` を作成し、このファイルに概要を追記する。
 
-### ローカライゼーション（LOCALIZATION_POLICY）
+### Localization (LOCALIZATION_POLICY)
 
 Alfred ワークフローは現時点では UI テキストのローカライゼーション機能を持たない。
 将来的に対応する場合の優先言語順:
@@ -182,7 +182,7 @@ Alfred ワークフローは現時点では UI テキストのローカライゼ
 
 ## Project-Specific Rules
 
-### アーキテクチャ制約
+### Architecture Constraints
 
 - `workflow/scripts/entry.py` は Alfred が実行する**唯一のファイル**。ビジネスロジックを書かない
 - `src/alfred/` は Alfred SDK ヘルパーのみ — アプリケーションロジックは不可
@@ -190,14 +190,14 @@ Alfred ワークフローは現時点では UI テキストのローカライゼ
 - すべての `output()` 呼び出しは `alfred.response.output()` を経由する
 - `main()` は必ず `safe_run()` でラップする（未捕捉例外 = Alfred が空白表示になる）
 
-### テスト規約
+### Testing Conventions
 
 - `src/app/`（commands / services / clients）をテスト対象とする — 純粋 Python
 - `ApiClient` 内の外部 API 呼び出しはモックする。テストで実際の HTTP 通信をしない
 - `conftest.py` が Alfred 環境変数を tmp ディレクトリに自動設定する
 - Alfred SDK ヘルパーのテストは `tests/test_alfred.py`
 
-### コードスタイル
+### Code Style
 
 - コメントは **「なぜそうするか」のみ** 書く。コードから自明な処理には書かない
 - ruff（linter）+ ruff format（formatter）、行長 100
@@ -205,13 +205,13 @@ Alfred ワークフローは現時点では UI テキストのローカライゼ
 - 各モジュール先頭に `from __future__ import annotations`
 - mypy strict モード（`pyproject.toml` 参照）
 
-### パフォーマンス
+### Performance
 
 - Script Filter のレスポンスタイム目標: **100ms 未満**
 - ネットワーク呼び出しには `alfred.cache.Cache` を使用する
 - キャッシュ TTL デフォルト: 300s（5分）
 
-### 依存管理
+### Dependency Management
 
 - ランタイム依存 → `requirements.txt` → `workflow/vendor/` にベンダリング（`make vendor`）
 - 開発依存 → `pyproject.toml [project.optional-dependencies.dev]`
@@ -221,15 +221,9 @@ Alfred ワークフローは現時点では UI テキストのローカライゼ
 
 ## AI Tool Assignments
 
-| ツール | 担当 |
-|---|---|
-| Claude Code | プロジェクト立ち上げ・大規模変更・アーキテクチャ設計・リファクタリング |
-| GitHub Copilot | バグ修正・細かな実装補助・単体テスト作成 |
-| Gemini CLI | プライバシーポリシー作成・更新 / ストア説明文 / 審査用ドキュメント / プロジェクト全体のドキュメント管理 |
-
-### AI並用時のルール
-- Claude Code 作業中は Copilot 提案を**参考程度**に（盲目的に受け入れない）
-- Copilot の提案がプロジェクト規約に反する場合は無視し、Claude Code でレビュー後採用
+- **使用ツール**: Claude Code、GitHub Copilot、Gemini CLI
+- **標準担当の正本**: `docs/dev-charter/AI_COLLABORATION_RULES.md` の「AI Tool Responsibilities」と「Rules for Multi-AI Usage」
+- **プロジェクト固有の上書き**: なし
 
 ---
 
@@ -248,7 +242,7 @@ Alfred ワークフローは現時点では UI テキストのローカライゼ
 
 ---
 
-## 開発コマンド
+## Development Commands
 
 ```bash
 make install          # dev 依存関係をインストール
@@ -261,13 +255,13 @@ make build            # dist/*.alfredworkflow を生成
 make vendor           # workflow/vendor/ を更新
 ```
 
-### コマンドの追加手順
+### Adding a New Command
 
 1. `src/app/commands/my_cmd.py` を作成（`handle(args: str) -> None` を実装）
 2. `src/app/core.py` に登録: `router.register("my")(my_cmd.handle)`
 3. `tests/test_commands.py` にテストを追加
 
-## リリース手順
+## Release Steps
 
 ```bash
 # pyproject.toml のバージョンを更新

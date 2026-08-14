@@ -44,6 +44,15 @@ repos:
         entry: ".env files must not be committed"
         files: '^\.env(\..+)?$'
 
+  # Markdown section heading language (dev-charter LANGUAGE_POLICY)
+  - repo: local
+    hooks:
+      - id: check-markdown-heading-language
+        name: Check Markdown section heading language
+        language: script
+        entry: scripts/check-markdown-heading-language.sh
+        files: '\.md$'
+
   # Type checking (runs mypy against src/)
   # language: python → pre-commit manages its own isolated venv for mypy,
   # so it works regardless of whether the project uses uv or global pip.
