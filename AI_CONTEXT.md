@@ -1,276 +1,89 @@
-# AI_CONTEXT.md — alfred-workflow-template
+## Reference Order
 
-> このファイルは開発憲章（`docs/dev-charter/`）をこのプロジェクト向けにまとめたものです。
-> AIツールはセッション開始時にこのファイルを読むことで、憲章全体を参照しなくても
-> プロジェクトの方針を把握できます。
+AI はタスク開始時に以下の順で参照する：
 
----
+1. `README-jp.md`（このリポジトリの概要・導入・更新方法）
+2. `CHARTER_INDEX.md`（タスクに関係する憲章ファイルの特定）
+3. `CHARTER_INDEX.md` で特定したファイル（原則 1〜2 件）
 
 ## Project Overview
 
-Alfred 5 Script Filter ワークフロー用の OSS テンプレート。
-Python 3.9+、レイヤードアーキテクチャ、CI/CD 完備。
-対象: 個人〜3人規模の開発チーム。ライセンス: MIT。
+dev-charter の本体。他プロジェクトが `git subtree` で取り込む共有開発憲章。
+ドキュメントのみのリポジトリ（ソースコードなし）。
 
-```
-src/alfred/     ← Alfred SDK（response / router / cache / config / logger / safe_run）
-src/app/        ← アプリケーション層（commands / services / clients）
-workflow/       ← Alfred パッケージ（info.plist / scripts/entry.py / vendor/）
-tests/          ← pytest テストスイート
-scripts/        ← build.sh / dev.sh / release.sh / vendor.sh
-```
+このファイルは **dev-charter リポジトリ自体を作業する AI 向け**のコンテキスト。
+採用先プロジェクトへの導入手順は `README-jp.md` を参照すること。
 
-詳細アーキテクチャ: `docs/architecture.md`
+### Technology Stack
 
----
+- Markdown：憲章・ガイドライン・チェックリスト
+- Bash：インストール・バージョン検証スクリプト
+- GitHub Actions / pre-commit：CI・セキュリティ・文書品質の検証
+- アプリケーション用のランタイム・フレームワーク：なし
+
+### Main Directories
+
+| パス | 役割 |
+|---|---|
+| `/` | 共通原則・ポリシー・AI コンテキスト・導入手順 |
+| `topics/` | 技術・運用トピック別の詳細ガイドライン |
+| `scripts/` | インストール・バージョン検証スクリプト |
+| `.github/workflows/` | CI・VERSION 更新・採用先向け更新ワークフロー |
 
 ## Applied Charter Principles
 
-### AI Context Priority (AI_CONTEXT_HIERARCHY)
+- コンテキストが競合する場合は `AI_CONTEXT_HIERARCHY.md` の優先順位に従う
+- 変更範囲を必要最小限にし、YAGNI・既存パターン優先など `PRINCIPLES.md` の設計原則に従う
+- シークレット管理と検証は `SECURITY_POLICY.md` に従う
 
-1. タスクコンテキスト（Issue / Pull Request）
-2. **プロジェクトコンテキスト（このファイル・プロジェクトドキュメント）** ← ここ
-3. 開発憲章（`docs/dev-charter/`）
-4. グローバルコンテキスト
-
-### Development Principles (PRINCIPLES)
-
-#### Basic Philosophy
-- **ローカルファースト** — Alfred ワークフローはオフラインで動作することを前提にする
-- **インフラ最小化** — サーバーレス、外部依存なし（vendor/ に完結）
-- **小さく始める** — 機能追加は必要性が確認されてから
-
-#### Code Design
-- **変更範囲は必要最小限** — Over-engineering しない
-- **YAGNI** — 今必要ない機能は実装しない
-- **DRY** — 2回の重複では抽象化しない。3回目で検討する
-- **既存コードの再利用** — 新規実装前に類似機能がないか確認する
-- **TODO/FIXME を残さない** — 実装するか、Issue として記録する（テンプレートの `# TODO:` コメントは「ユーザーが置き換える場所の目印」として例外的に許可）
-- **既存パターンに従う** — 命名規則・アーキテクチャ・ディレクトリ構造を統一する
-
-### AI Collaboration Rules (AI_COLLABORATION_RULES)
-
-#### AI Behavior Principles
-- **Scope 厳守** — 会話のタスク・ゴールを AI が勝手に変更しない
-- **不明点は作業前に1回でまとめて質問する** — 重要な情報不足や曖昧さは質問する。軽微な不足は合理的な仮定で補い、仮定を明示する。推測で断定しない
-
-#### Required Confirmations Before Coding
-- ゴール（完了条件）
-- 言語・FW・バージョン制約
-- 新規 or 既存コード修正
-- テストの要否
-- 影響範囲
-
-確認不要（既存コードに合わせて進める）: コードスタイル / ファイル配置 / 軽微な実装詳細
-
-#### Error Handling
-- **原因分析 → 修正方針説明 → 実装** の順で進める
-- エラーログ・スタックトレースは全文確認してから対応
-- 推測で修正しない（必要なら既存コードを確認する）
-- デバッグ用の `print` 文は本番コードに残さない
-
-#### Work Stance
-- 大きな変更前に方針を説明してから着手する
-- **不要な依存追加禁止** — 既存の依存で解決できないか先に検討する
-
-#### Document Sync Rule
+## Document Sync Rule
 
 仕様・ルール・構成に変更が生じたとき、変更と同じ作業内で関連ドキュメントを更新する。
 対象は docs/ 内のファイルに限らず、AI_CONTEXT.md・README.md 等のルートファイルも含む。
 
-#### Charter Lookup
-
-不明点が憲章に関係する場合は**全ファイルを検索せず**、以下の手順で参照する:
-
-1. `docs/dev-charter/CHARTER_INDEX.md` を読み、該当トピックのファイルを特定する
-2. 特定したファイル（原則 1〜2 件）のみを読む
-3. 参照後にユーザーへ提案・確認を行う
-
-推測で断定せず、憲章を参照してからユーザーに提案・質問する。
-
-#### GitHub Operations
-
-Issue を作成する場合は、必ずリポジトリオーナーを `assignee` に設定する。
-
-```bash
-gh issue create --title "..." --body "..." --assignee @me
-```
-
-### Language Policy (LANGUAGE_POLICY)
-
-OSS プロジェクトのため、**公開面は英語を主言語**とする。
-**日本語版が編集の起点（正本）であり、英語版はその翻訳として同期する。**
-
-| 対象 | 言語 |
-|---|---|
-| `README.md` | 英語（参照版） |
-| `README-jp.md` | 日本語（正本） |
-| コミットメッセージ | 英語 |
-| Issue / PR のタイトルと本文 | 英語 |
-| 公開 API / public 関数 docstring | 英語 |
-| examples/ のコメント | 英語 |
-| エラーメッセージ・ログ | 英語 |
-| private 関数・実装詳細のコメント | 日本語 OK |
-| 変数名・識別子 | 英語 |
-
-両言語ファイルが存在する場合: **日本語を正本として編集し、英語はそれに合わせて同一コミットで更新する**。
-
-### Project Lifecycle (PROJECT_LIFECYCLE)
-
-- 規模: 個人〜3人。アジャイルで迅速な意思決定
-- **コミット粒度** — 機能単位・動作確認 OK 後にコミット
-- **コミットメッセージ** — Conventional Commits 形式（feat / fix / refactor / docs / chore）
-- **WIP 禁止** — 動作しないコードはコミットしない
-
-### Security (SECURITY_POLICY)
-
-#### Two-Layer Structure
-1. **個人 git フック**（`~/.config/git/hooks/pre-commit`）— 開発者個人のマシン全体に適用
-2. **per-repo pre-commit フック**（`.pre-commit-config.yaml`）— チーム強制・CI でも動作
-
-#### Automatically Blocked Items
-- `anonymous` のままコミット（個人 git フック側で対応。per-repo フックでは検知しない）
-- `.env` ファイルのコミット（`.env.example` は許可）
-- SSH 秘密鍵・クラウドトークン（gitleaks で検知）
-- ローカル絶対パスのハードコード（環境依存コードの防止。`.md`・`docs/` は allowlist で除外）
-- 500 KB を超えるファイル
-
-#### Manual Compliance Items
-- API キー・パスワードをコードに書かない（Alfred の暗号化キーチェーンを使う）
-- 誤ってコミットしたシークレットは、履歴から削除した上で即座にローテーションする
-- AI に秘密情報を含むファイルやコードを渡さない
-- AI が生成したコードは必ずレビューしてからコミットする
-- AI との会話ログをリポジトリにコミットしない
-
-#### Code Review
-- `main` に到達するコミットは可能な限り他の開発者がレビューする（個人開発の場合は PR を経由してセルフレビューする）
-- 認証・認可・暗号化・データアクセスに関わる変更はセキュリティレビューを必須とする
-
-詳細: `SECURITY.md`、`docs/dev-charter/SECURITY_POLICY.md`
-
-### UI Guidelines (UI_GUIDELINES)
-
-Alfred Script Filter のレスポンス（JSON items）に適用するルール:
-
-- **Unicode 絵文字禁止** — Alfred の結果アイテムの `title` / `subtitle` に Unicode 絵文字を使わない
-  - 代替: ASCII 記号（`>`、`*`、`[x]` など）または何も使わない
-- アイコンは `workflow/icon.png` で制御する（PNG ファイル）
-- 外観モード（ライト/ダーク）は Alfred が制御するため、ワークフロー側での対応は不要
-
-### Monetization (MONETIZATION_POLICY)
-
-OSS プロジェクトのため、以下の方式を採用:
-
-- **Buy Me a Coffee**: https://www.buymeacoffee.com/y.marui
-- **GitHub Sponsors**: リポジトリの Sponsors 機能（`.github/FUNDING.yml` 設定済み）
-
-サポートセクションは README に設けず、バッジ（GitHub Sponsors・Buy Me a Coffee）で代替する。バッジは Charter Check バッジの後に配置する。
-マネタイズを本格検討する場合は `MONETIZATION.md` を作成し、このファイルに概要を追記する。
-
-### Localization (LOCALIZATION_POLICY)
-
-Alfred ワークフローは現時点では UI テキストのローカライゼーション機能を持たない。
-将来的に対応する場合の優先言語順:
-
-1. ユーザー設定
-2. システム言語設定
-3. 英語（デフォルト）
-
-対応候補言語: 日本語 / 英語 / 中国語 / ヒンディー語 / スペイン語 / フランス語 / ポルトガル語
-
----
-
 ## Project-Specific Rules
 
-### Architecture Constraints
+- **正本は日本語**。英語版（README.md）は翻訳。日本語版と英語版は同一コミットで更新する（`LANGUAGE_POLICY.md` 参照）
+- **Conventional Commits**（feat/fix/docs/chore）でコミットする
+- **コミット前に `VERSION` を今日の日付（UTC、`YYYY-MM-DD`）に更新する**。1日に複数回リリースしない（日付がバージョン識別子のため）。pre-commit フックが自動検証する
+  - ローカルの更新コマンド：`UPDATE=1 bash scripts/check-version-date.sh`（`VERSION` を UTC 日付で更新）
+  - **クラウド/エージェント環境**：ローカルの pre-commit フックが動作しない。CI の自動更新ワークフロー（`.github/workflows/update-version.yml`）が `VERSION` を自動的に更新してコミットするため、漏れた場合は CI が補完する。エージェントは可能な限り手動で VERSION を更新するのが望ましい
+- **新規ドキュメントを追加するとき**は正本の索引である `CHARTER_INDEX.md` を更新する
+- **憲章に追加できる原則・ルール**は複数の異なるプロジェクトに適用できるものに限る（1プロジェクト固有のルールは不可）
+- **dev-charter 全ドキュメントのセクションヘッダ**：日本語ドキュメントでも英語で記載する
 
-- `workflow/scripts/entry.py` は Alfred が実行する**唯一のファイル**。ビジネスロジックを書かない
-- `src/alfred/` は Alfred SDK ヘルパーのみ — アプリケーションロジックは不可
-- Commands → Services → Clients の順に呼ぶ。レイヤーをスキップしない
-- すべての `output()` 呼び出しは `alfred.response.output()` を経由する
-- `main()` は必ず `safe_run()` でラップする（未捕捉例外 = Alfred が空白表示になる）
+## CI Workflows
 
-### Testing Conventions
+このリポジトリには以下の GitHub Actions ワークフローが存在する：
 
-- `src/app/`（commands / services / clients）をテスト対象とする — 純粋 Python
-- `ApiClient` 内の外部 API 呼び出しはモックする。テストで実際の HTTP 通信をしない
-- `conftest.py` が Alfred 環境変数を tmp ディレクトリに自動設定する
-- Alfred SDK ヘルパーのテストは `tests/test_alfred.py`
+| ファイル | 目的 |
+|---|---|
+| `.github/workflows/ci.yml` | PR・main push に対して `pre-commit run --all-files` を実行し、`check-version-date` 等のフックを強制する |
+| `.github/workflows/update-version.yml` | 非フォーク PR で `VERSION` が古い場合に自動更新コミットを行う（cloud/agent 対応） |
+| `.github/workflows/check-charter.yml` | 採用先プロジェクトから呼び出す再利用可能ワークフロー（dev-charter 本体の CI ではない） |
 
-### Code Style
+`ci.yml` の `Build` ジョブが Branch Protection の必須ステータスチェックとして機能する。
 
-- コメントは **「なぜそうするか」のみ** 書く。コードから自明な処理には書かない
-- ruff（linter）+ ruff format（formatter）、行長 100
-- すべての public 関数に型ヒント必須
-- 各モジュール先頭に `from __future__ import annotations`
-- mypy strict モード（`pyproject.toml` 参照）
+## Security Hooks
 
-### Performance
+`core.hooksPath` が設定済みかどうかで手順が異なる：
 
-- Script Filter のレスポンスタイム目標: **100ms 未満**
-- ネットワーク呼び出しには `alfred.cache.Cache` を使用する
-- キャッシュ TTL デフォルト: 300s（5分）
+- **設定済み**（グローバルフックが pre-commit を呼ぶ）：`pre-commit install` 不要。`pre-commit run --all-files` で動作確認
+- **未設定**：`pre-commit install` 後に `pre-commit run --all-files` で動作確認
 
-### Dependency Management
+pre-commit は、シークレット・ローカル絶対パス・VERSION 日付・ローカル dev-charter バージョン（sibling `../dev-charter` との比較）・Markdown の H2〜H6 の見出し言語・シェルスクリプトを機械的に検証する。日英文書の意味的一致など判断を要する項目は、AI または人間がレビューする。
 
-- ランタイム依存 → `requirements.txt` → `workflow/vendor/` にベンダリング（`make vendor`）
-- 開発依存 → `pyproject.toml [project.optional-dependencies.dev]`
-- ランタイム依存は最小限に保つ（パッケージ追加 = ワークフローサイズ増加）
-
----
+確認コマンド：`git config core.hooksPath`
 
 ## AI Tool Assignments
 
-- **使用ツール**: Claude Code、GitHub Copilot、Gemini CLI
-- **標準担当の正本**: `docs/dev-charter/AI_COLLABORATION_RULES.md` の「AI Tool Responsibilities」と「Rules for Multi-AI Usage」
-- **プロジェクト固有の上書き**: なし
-
----
+- **使用ツール**：Claude Code、Codex、GitHub Copilot、Gemini CLI、ローカル LLM（Ollama）
+- **標準担当の正本**：`AI_COLLABORATION_RULES.md` の「AI Tool Responsibilities」と「Rules for Multi-AI Usage」
+- **このリポジトリ固有の上書き**：なし
 
 ## Prohibited Actions
 
-- シークレット・認証情報・`.env` ファイルのコミット
-- pre-commit フックのスキップ（`--no-verify` 禁止）
-- `workflow/scripts/entry.py` へのビジネスロジックの追加
-- レイヤーをスキップした呼び出し（例: Command が Client を直接呼ぶ）
-- テストでの実際の HTTP 通信
-- デバッグ用 `print` 文の本番コードへの残置
-- Alfred 結果アイテムへの Unicode 絵文字の使用
-- ハードコードされた絶対パス（`$HOME` を使う）
-- AI に秘密情報を含むファイルやコードを渡すこと
-- AI との会話ログのリポジトリへのコミット
-
----
-
-## Development Commands
-
-```bash
-make install          # dev 依存関係をインストール
-make run Q="search foo"  # Alfred をローカルでシミュレート
-make test             # テスト実行
-make lint             # ruff チェック
-make format           # ruff format（フォーマット適用）
-make typecheck        # mypy
-make build            # dist/*.alfredworkflow を生成
-make vendor           # workflow/vendor/ を更新
-```
-
-### Adding a New Command
-
-1. `src/app/commands/my_cmd.py` を作成（`handle(args: str) -> None` を実装）
-2. `src/app/core.py` に登録: `router.register("my")(my_cmd.handle)`
-3. `tests/test_commands.py` にテストを追加
-
-## Release Steps
-
-```bash
-# pyproject.toml のバージョンを更新
-git tag v1.2.3
-git push --tags
-# GitHub Actions が .alfredworkflow を生成して GitHub Release を作成
-```
-
----
-
-*このファイルは `docs/dev-charter/` の内容をプロジェクト向けにまとめたものです。
-憲章が更新された場合（`git subtree pull` 後）は、このファイルも更新してください。*
+- シークレット・認証情報のコミット
+- 未完成・曖昧な原則のコミット（issue で管理する）
+- プロジェクト固有のルールを憲章に追加すること
+- ソースコード・ビルド成果物・ログのコミット

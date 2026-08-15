@@ -1,1 +1,1 @@
-Read `AI_CONTEXT.md` at the project root for full project context and rules.
+`AI_CONTEXT.md` を参照。
