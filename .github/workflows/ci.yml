@@ -4,12 +4,42 @@ on:
   push:
     branches: [main]
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     branches: [main]
   workflow_dispatch:
 
 jobs:
+  changes:
+    name: Detect changes
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dorny/paths-filter@v4
+        id: filter
+        with:
+          predicate-quantifier: 'some-with-excludes'
+          filters: |
+            code:
+              - '**'
+              - '!**/*.md'
+              - '!docs/**'
+              - '!LICENSE'
+              - '!.gitignore'
+              - '!.github/FUNDING.yml'
+              - '!.github/CODEOWNERS'
+              - '!.github/ISSUE_TEMPLATE/**'
+              - '!.github/*_TEMPLATE.md'
+              - '!.github/pull_request_template.md'
+              - '!.github/copilot-instructions.md'
+              - '!.github/workflows/dev-charter-check.yml'
+              - '!.github/workflows/auto-assign-self.yml'
+
   security:
     name: Security scan (pre-commit)
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -32,6 +62,8 @@ jobs:
 
   lint:
     name: Lint
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -54,6 +86,8 @@ jobs:
 
   test:
     name: Test (Python ${{ matrix.python-version }})
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: macos-latest
     strategy:
       matrix:
@@ -83,7 +117,8 @@ jobs:
   build:
     name: Build
     runs-on: macos-latest
-    needs: [security, lint, test]
+    needs: [changes, security, lint, test]
+    if: needs.changes.outputs.code == 'true'
 
     steps:
       - uses: actions/checkout@v7
@@ -101,3 +136,26 @@ jobs:
           name: alfredworkflow
           path: dist/*.alfredworkflow
           retention-days: 7
+
+  gate:
+    name: Required Checks
+    needs: [changes, security, lint, test, build]
+    if: always() && (github.event_name != 'pull_request' || github.event.pull_request.draft == false)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify required jobs succeeded
+        run: |
+          if [ "${{ needs.security.result }}" != "success" ]; then
+            echo "::error::security did not succeed (got: ${{ needs.security.result }})"
+            exit 1
+          fi
+          if [ "${{ needs.changes.outputs.code }}" != "true" ]; then
+            echo "docs/config-only change; nothing further to verify"
+            exit 0
+          fi
+          for result in "${{ needs.lint.result }}" "${{ needs.test.result }}" "${{ needs.build.result }}"; do
+            if [ "$result" != "success" ]; then
+              echo "::error::a required job did not succeed (got: $result)"
+              exit 1
+            fi
+          done
