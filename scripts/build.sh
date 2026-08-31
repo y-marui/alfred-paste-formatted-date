@@ -60,12 +60,12 @@ cp -r "$SRC_DIR/" "$BUILD_DIR/src/"
 echo "→ Installing vendor dependencies"
 mkdir -p "$BUILD_DIR/vendor"
 
-if [[ -f "$REPO_ROOT/requirements.txt" ]]; then
+if [[ -f "$REPO_ROOT/vendor-requirements.txt" ]]; then
   $PIP_INSTALL \
-    --requirement "$REPO_ROOT/requirements.txt" \
+    --requirement "$REPO_ROOT/vendor-requirements.txt" \
     --target "$BUILD_DIR/vendor"
 else
-  echo "  No requirements.txt - skipping"
+  echo "  No vendor-requirements.txt - skipping"
 fi
 
 # Remove development artifacts to reduce package size
