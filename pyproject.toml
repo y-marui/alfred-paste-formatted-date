@@ -3,7 +3,7 @@ name = "alfred-paste-formatted-date"
 version = "0.1.0"
 description = "Generate and paste dates in multiple formats."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 license = { text = "MIT" }
 # Runtime dependencies - also add to vendor-requirements.txt for vendor install
 dependencies = []

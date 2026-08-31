@@ -90,7 +90,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        python-version: ["3.9", "3.11", "3.12", "3.14"]
+        python-version: ["3.11", "3.12", "3.13", "3.14"]  # EOLまで6ヶ月以上あるバージョン
 
     steps:
       - uses: actions/checkout@v7
