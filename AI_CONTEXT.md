@@ -9,7 +9,7 @@
 ## Project Overview
 
 Alfred 5 Script Filter ワークフロー用の OSS テンプレート。
-Python 3.9+、レイヤードアーキテクチャ、CI/CD 完備。
+Python 3.11+、レイヤードアーキテクチャ、CI/CD 完備。
 対象: 個人〜3人規模の開発チーム。ライセンス: MIT。
 
 ```
