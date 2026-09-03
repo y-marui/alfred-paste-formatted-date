@@ -1,4 +1,4 @@
-.PHONY: help install hooks lint format typecheck test test-cov vendor build deploy release run clean update-charter
+.PHONY: help install hooks lint format typecheck test test-cov vendor build deploy release run clean update-charter update-workflow-notes
 
 # ---------------------------------------------------------------------------
 # Python environment selector
@@ -41,6 +41,7 @@ help:
 	@echo "  make run Q=''    Simulate Alfred with query Q"
 	@echo "  make clean       Remove build artifacts"
 	@echo "  make update-charter  Pull latest dev-charter via git subtree"
+	@echo "  make update-workflow-notes  Pull latest alfred-workflow-notes via git subtree"
 	@echo ""
 	@echo "  use_uv=1 (default when uv found) → uv managed virtual environment"
 	@echo "  use_uv=0 (default when uv absent) → global python3 / pip3"
@@ -121,13 +122,10 @@ clean:
 # Dev Charter
 # ---------------------------------------------------------------------------
 update-charter:
-	git remote | grep -q '^dev-charter$$' || \
-	  git remote add dev-charter https://github.com/y-marui/dev-charter
-	git fetch dev-charter
-	@STASHED=0; \
-	if ! git diff --quiet || ! git diff --cached --quiet || [ -n "$$(git ls-files --others --exclude-standard)" ]; then \
-		git stash push -u -m "update-charter"; \
-		STASHED=1; \
-	fi; \
-	git subtree pull --prefix=docs/dev-charter dev-charter main --squash; \
-	if [ "$$STASHED" = "1" ]; then git stash pop; fi
+	curl -fsSL https://raw.githubusercontent.com/y-marui/dev-charter/main/scripts/install.sh | CHARTER_UPDATE_ONLY=1 bash
+
+# ---------------------------------------------------------------------------
+# Alfred Workflow Notes
+# ---------------------------------------------------------------------------
+update-workflow-notes:
+	curl -fsSL https://raw.githubusercontent.com/y-marui/alfred-workflow-template/main/scripts/install-workflow-notes.sh | bash
