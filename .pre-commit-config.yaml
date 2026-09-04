@@ -1,12 +1,12 @@
-repos:
-  # Ruff: fast linter + formatter (replaces flake8, isort, pyupgrade, etc.)
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.7
-    hooks:
-      - id: ruff
-        args: [--fix]
-      - id: ruff-format
+exclude: |
+  (?x)^(
+    \.git/|
+    dist/|
+    \.build/|
+    go\.sum$
+  )
 
+repos:
   # General file hygiene + security basics
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
@@ -53,19 +53,30 @@ repos:
         entry: scripts/check-markdown-heading-language.sh
         files: '\.md$'
 
-  # Type checking (runs mypy against src/)
-  # language: python → pre-commit manages its own isolated venv for mypy,
-  # so it works regardless of whether the project uses uv or global pip.
+  # ----------------------------------------------------------------
+  # Go (repository-specific; not part of the shared dev-charter set)
+  # ----------------------------------------------------------------
   - repo: local
     hooks:
-      - id: mypy
-        name: mypy
-        language: python
-        entry: mypy
-        args: [src]
-        types: [python]
+      - id: gofmt
+        name: gofmt
+        language: system
+        entry: >-
+          bash -c '
+          out=$(gofmt -l "$@");
+          if [ -n "$out" ]; then
+          echo "gofmt needs to be run on:";
+          echo "$out";
+          exit 1;
+          fi
+          ' --
+        types: [go]
+      - id: go-vet
+        name: go vet
+        language: system
+        entry: bash -c 'go vet ./...'
+        types: [go]
         pass_filenames: false
-        additional_dependencies: ["mypy>=1.9"]
 
   # ----------------------------------------------------------------
   # Charter CI template check
@@ -179,7 +190,8 @@ repos:
 
   # ----------------------------------------------------------------
   # Python package management (topics/PYTHON_DEV_ENV.md)
-  # (blocks vendor-requirements.txt / missing uv.lock when pyproject.toml exists)
+  # (blocks vendor-requirements.txt / missing uv.lock when pyproject.toml
+  # exists; a no-op here since this project has no pyproject.toml)
   # ----------------------------------------------------------------
   - repo: local
     hooks:

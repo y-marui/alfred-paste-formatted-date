@@ -18,7 +18,6 @@ Type `date` in Alfred to see all available formats. Select one to copy and auto-
 ```
 date             — list all formats
 date <filter>    — filter by format name or value (e.g. "ISO", "YYYY", "unix")
-date config      — view or reset configuration
 date help        — show available commands
 ```
 
@@ -40,7 +39,6 @@ date help        — show available commands
 ## Requirements
 
 - Alfred 5 (Powerpack required for Script Filter)
-- Python 3.9+
 
 ## Installation
 
@@ -48,33 +46,34 @@ Download the latest `.alfredworkflow` from [Releases](https://github.com/y-marui
 
 ## Development
 
-```bash
-# Install dev dependencies
-make install
+Requires Go (see `go.mod` for the toolchain version) — see [DEVELOPING.md](DEVELOPING.md) for the full workflow.
 
+```bash
 # Simulate Alfred locally
-make run Q=""
-make run Q="ISO"
+go run ./cmd/paste-formatted-date-alfred ""
+go run ./cmd/paste-formatted-date-alfred "ISO"
 
 # Run tests
 make test
 
 # Build workflow package
-make build
-# → dist/alfred-paste-formatted-date-0.1.0.alfredworkflow
+make build-workflow
+# → dist/paste-formatted-date-0.1.0.alfredworkflow
 ```
 
 ## Project Structure
 
 ```
 alfred-paste-formatted-date/
-├── src/
-│   ├── alfred/         # Alfred SDK (response, router, cache, config, logger, safe_run)
-│   └── app/            # Application layer (commands)
-├── workflow/           # Alfred package (info.plist, scripts/entry.py, vendor/)
-├── tests/              # pytest test suite
-├── scripts/            # build.sh, dev.sh, release.sh, vendor.sh
-└── docs/               # Architecture and development documentation
+├── cmd/
+│   └── paste-formatted-date-alfred/  # The binary Alfred invokes
+├── internal/
+│   ├── datecmd/         # Command dispatch (date / help)
+│   ├── dateresolve/     # Query → target date parsing
+│   ├── datefmt/         # Date format table + rendering
+│   └── scriptfilter/    # Alfred Script Filter JSON types
+├── workflow/            # Alfred package (info.plist, icon.png)
+└── docs/                # Architecture documentation
 ```
 
 ## License

@@ -1,23 +1,39 @@
-# AI_CONTEXT.md — alfred-workflow-template
+# AI_CONTEXT.md — alfred-paste-formatted-date
 
 > このファイルは開発憲章（`docs/dev-charter/`）をこのプロジェクト向けにまとめたものです。
 > AIツールはセッション開始時にこのファイルを読むことで、憲章全体を参照しなくても
 > プロジェクトの方針を把握できます。
 
+## Reference Order
+
+AI はタスク開始時に以下の順で参照する:
+
+1. `README.md`（概要・セットアップ）
+2. `DEVELOPING.md`（ビルド・実装規約・命名規則）
+
+必要に応じて以下を参照する（順不同）:
+- `CONTRIBUTING.md`（PR・Issue ルール）
+- `docs/architecture.md`（モジュール・コンポーネント構造）
+- `docs/configuration-builder.md`（Alfred Configuration Builder 型リファレンス）
+
+不明点は `docs/dev-charter/CHARTER_INDEX.md` → 該当ファイルの順で参照する。
+
 ---
 
 ## Project Overview
 
-Alfred 5 Script Filter ワークフロー用の OSS テンプレート。
-Python 3.11+、レイヤードアーキテクチャ、CI/CD 完備。
+Alfred 5 Script Filter ワークフロー。今日の日付を複数のフォーマットで生成・貼り付けする。
+Go（サードパーティ依存なし）、`cmd/`+`internal/` レイアウト、CI/CD 完備。
 対象: 個人〜3人規模の開発チーム。ライセンス: MIT。
 
 ```
-src/alfred/     ← Alfred SDK（response / router / cache / config / logger / safe_run）
-src/app/        ← アプリケーション層（commands / services / clients）
-workflow/       ← Alfred パッケージ（info.plist / scripts/entry.py / vendor/）
-tests/          ← pytest テストスイート
-scripts/        ← build.sh / dev.sh / release.sh / vendor.sh
+cmd/paste-formatted-date-alfred/  ← Alfred が実行する唯一のバイナリ
+internal/datecmd/                 ← コマンドディスパッチ（date / help）
+internal/dateresolve/             ← クエリ → 対象日付の解決（相対オフセット・直接指定）
+internal/datefmt/                 ← 日付フォーマット一覧・整形ロジック
+internal/scriptfilter/            ← Alfred Script Filter JSON 型
+workflow/                         ← Alfred パッケージ（info.plist / icon.png）
+scripts/                          ← build-workflow.sh / extract-changelog.sh
 ```
 
 詳細アーキテクチャ: `docs/architecture.md`
@@ -36,7 +52,7 @@ scripts/        ← build.sh / dev.sh / release.sh / vendor.sh
 ### Software Design Principles (SOFTWARE_DESIGN_PRINCIPLES)
 
 - **ローカルファースト** — Alfred ワークフローはオフラインで動作することを前提にする
-- **インフラ最小化** — サーバーレス、外部依存なし（vendor/ に完結）
+- **インフラ最小化** — サーバーレス、外部依存なし（stdlib のみ）
 - **小さく始める** — 機能追加は必要性が確認されてから
 
 ### Change Design Principles (PRINCIPLES)
@@ -45,7 +61,7 @@ scripts/        ← build.sh / dev.sh / release.sh / vendor.sh
 - **YAGNI** — 今必要ない機能は実装しない
 - **DRY** — 2回の重複では抽象化しない。3回目で検討する
 - **既存コードの再利用** — 新規実装前に類似機能がないか確認する
-- **TODO/FIXME を残さない** — 実装するか、Issue として記録する（テンプレートの `# TODO:` コメントは「ユーザーが置き換える場所の目印」として例外的に許可）
+- **TODO/FIXME を残さない** — 実装するか、Issue として記録する
 - **既存パターンに従う** — 命名規則・アーキテクチャ・ディレクトリ構造を統一する
 
 ### AI Collaboration Rules (AI_COLLABORATION_RULES)
@@ -69,14 +85,18 @@ scripts/        ← build.sh / dev.sh / release.sh / vendor.sh
 - 推測で修正しない（必要なら既存コードを確認する）
 - デバッグ用の `print` 文は本番コードに残さない
 
-#### Work Stance
+#### Working Stance
 - 大きな変更前に方針を説明してから着手する
 - **不要な依存追加禁止** — 既存の依存で解決できないか先に検討する
+- **ドキュメント同期** — 仕様・ルール・構成に変更が生じたとき、変更と同じ作業内で関連ドキュメントを更新する（対象: `docs/` 内ファイル、`AI_CONTEXT.md`、`README.md` 等）
 
-#### Document Sync Rule
+#### dev-charter Modification Rules
 
-仕様・ルール・構成に変更が生じたとき、変更と同じ作業内で関連ドキュメントを更新する。
-対象は docs/ 内のファイルに限らず、AI_CONTEXT.md・README.md 等のルートファイルも含む。
+`docs/dev-charter/` 配下のファイルを**直接編集しない**。
+
+- 変更が必要な場合は dev-charter リポジトリ本体に Issue を立て、`git subtree pull` でアップデートを取り込む
+- `git subtree pull` によるアップデートのみ許可する
+- このプロジェクト固有のルールは `AI_CONTEXT.md` または専用ファイルに記載する
 
 #### Charter Lookup
 
@@ -184,38 +204,66 @@ Alfred ワークフローは現時点では UI テキストのローカライゼ
 
 ### Architecture Constraints
 
-- `workflow/scripts/entry.py` は Alfred が実行する**唯一のファイル**。ビジネスロジックを書かない
-- `src/alfred/` は Alfred SDK ヘルパーのみ — アプリケーションロジックは不可
-- Commands → Services → Clients の順に呼ぶ。レイヤーをスキップしない
-- すべての `output()` 呼び出しは `alfred.response.output()` を経由する
-- `main()` は必ず `safe_run()` でラップする（未捕捉例外 = Alfred が空白表示になる）
+- `cmd/paste-formatted-date-alfred/main.go` は Alfred が実行する**唯一のバイナリ**。ビジネスロジックを書かない
+- `internal/datecmd/` はディスパッチ・引数解析・結果組み立てのみ — 日付解決は `internal/dateresolve/`、フォーマットは `internal/datefmt/` に置く
+- `internal/dateresolve/`・`internal/datefmt/` は Alfred 非依存の純粋ロジック — stdlib のみ使用し、単体でテスト可能に保つ
+- すべての応答は `internal/scriptfilter.Response.Write()` を経由する
+- `main()` は panic を `recover()` でラップする（未捕捉 panic = Alfred が空白表示になる）
 
 ### Testing Conventions
 
-- `src/app/`（commands / services / clients）をテスト対象とする — 純粋 Python
-- `ApiClient` 内の外部 API 呼び出しはモックする。テストで実際の HTTP 通信をしない
-- `conftest.py` が Alfred 環境変数を tmp ディレクトリに自動設定する
-- Alfred SDK ヘルパーのテストは `tests/test_alfred.py`
+- `internal/dateresolve/`・`internal/datecmd/` をテスト対象とする（`go test ./...`）
+- 外部 I/O は行わない
+- 日付・時刻に依存するテストは `time.Now()` からの相対比較で書く（固定日付とのハードコード比較を避ける）
+
+詳細な開発フロー・命名規則・コードレビュー手順は `DEVELOPING.md` を参照する。
+
+### Go Development Environment (GO_TOOLCHAIN)
+
+| 役割 | ツール |
+|---|---|
+| Go バージョン管理 | `go.mod` の `go` ディレクティブに従う |
+| Linter / Formatter | `gofmt` + `go vet` |
+| テスト | `go test` |
+| 依存管理 | 標準の `go.mod`（サードパーティ依存は原則追加しない） |
+
+新しい Go コードを追加する場合、または依存関係を変更する場合はこのツールチェーンに従う。
+
+### Alfred Runtime (RUNTIME)
+
+Alfred は Script Filter ノードからユニバーサル（amd64+arm64）バイナリを直接実行する。
+インタプリタ選択や実行時ラッパースクリプトは不要。
+
+`workflow/info.plist` の Script Filter ノードの `script` キー:
+
+```bash
+./paste-formatted-date-alfred "$1"
+```
+
+### Configuration Management (CONFIG_BUILDER)
+
+- **ユーザーが設定する値はすべて Config Builder に入れる** — `workflow/info.plist` の `userconfigurationconfig` 配列に追加する
+- Alfred の `variables` キー（environment variable）は使わない。Config Builder で代替できる場合は必ず Config Builder を使う
+- Config Builder の値は Alfred がスクリプト実行時に環境変数として自動で渡すため、スクリプト側では `os.Getenv()` で読める
+- 新しい設定項目を追加するときは以下の型から選ぶ: `textfield` / `checkbox` / `select` / `file` / `password`
+- 現時点でこのワークフローは Config Builder 変数を宣言していない（Python 版の `Use uv` / `Log Level` はテンプレート由来の未使用機能で、Go 移行時に廃止した）
 
 ### Code Style
 
 - コメントは **「なぜそうするか」のみ** 書く。コードから自明な処理には書かない
-- ruff（linter）+ ruff format（formatter）、行長 100
-- すべての public 関数に型ヒント必須
-- 各モジュール先頭に `from __future__ import annotations`
-- mypy strict モード（`pyproject.toml` 参照）
+- `gofmt` + `go vet`。CI で強制する
+- すべての exported 関数・型に doc コメントを検討する（自明でないもののみ）
+
+命名規則・コミットメッセージ形式・PR チェックリストは `CONTRIBUTING.md` を参照する。
 
 ### Performance
 
-- Script Filter のレスポンスタイム目標: **100ms 未満**
-- ネットワーク呼び出しには `alfred.cache.Cache` を使用する
-- キャッシュ TTL デフォルト: 300s（5分）
+- Script Filter のレスポンスタイム目標: **100ms 未満**（コンパイル済みバイナリのため通常余裕がある）
 
 ### Dependency Management
 
-- ランタイム依存 → `vendor-requirements.txt` → `workflow/vendor/` にベンダリング（`make vendor`）
-- 開発依存 → `pyproject.toml [project.optional-dependencies.dev]`
-- ランタイム依存は最小限に保つ（パッケージ追加 = ワークフローサイズ増加）
+- サードパーティ依存の追加は原則禁止（`go.mod` は依存なしを維持）
+- ランタイム依存は最小限に保つ（パッケージ追加 = ワークフローサイズ・起動時間の増加）
 
 ---
 
@@ -231,44 +279,20 @@ Alfred ワークフローは現時点では UI テキストのローカライゼ
 
 - シークレット・認証情報・`.env` ファイルのコミット
 - pre-commit フックのスキップ（`--no-verify` 禁止）
-- `workflow/scripts/entry.py` へのビジネスロジックの追加
-- レイヤーをスキップした呼び出し（例: Command が Client を直接呼ぶ）
+- `cmd/paste-formatted-date-alfred/main.go` へのビジネスロジックの追加
 - テストでの実際の HTTP 通信
-- デバッグ用 `print` 文の本番コードへの残置
+- デバッグ用 `fmt.Print*` 文の本番コードへの残置
 - Alfred 結果アイテムへの Unicode 絵文字の使用
 - ハードコードされた絶対パス（`$HOME` を使う）
+- Config Builder で代替できる設定を Alfred の `variables` キー（environment variable）に直接書くこと
 - AI に秘密情報を含むファイルやコードを渡すこと
 - AI との会話ログのリポジトリへのコミット
 
 ---
 
-## Development Commands
+## Development Commands and Release Process
 
-```bash
-make install          # dev 依存関係をインストール
-make run Q="search foo"  # Alfred をローカルでシミュレート
-make test             # テスト実行
-make lint             # ruff チェック
-make format           # ruff format（フォーマット適用）
-make typecheck        # mypy
-make build            # dist/*.alfredworkflow を生成
-make vendor           # workflow/vendor/ を更新
-```
-
-### Adding a New Command
-
-1. `src/app/commands/my_cmd.py` を作成（`handle(args: str) -> None` を実装）
-2. `src/app/core.py` に登録: `router.register("my")(my_cmd.handle)`
-3. `tests/test_commands.py` にテストを追加
-
-## Release Steps
-
-```bash
-# pyproject.toml のバージョンを更新
-git tag v1.2.3
-git push --tags
-# GitHub Actions が .alfredworkflow を生成して GitHub Release を作成
-```
+開発フロー・コマンド一覧・リリース手順は `CONTRIBUTING.md` を参照する。
 
 ---
 

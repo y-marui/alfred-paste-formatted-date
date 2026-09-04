@@ -2,141 +2,80 @@
 
 ## Overview
 
-This workflow uses a layered architecture to keep Alfred-specific code isolated
-from business logic, making it easy to test and extend.
+An Alfred Workflow (Go): `cmd/paste-formatted-date-alfred` is the single
+universal (amd64+arm64) binary `workflow/info.plist` invokes. Its Script
+Filter node passes the query following the `date` keyword as `$1`;
+`internal/datecmd.Dispatch` parses it, resolves the target date via
+`internal/dateresolve`, formats it via `internal/datefmt`, and prints Alfred
+Script Filter JSON via `internal/scriptfilter`. Selecting a result copies its
+value to the clipboard and auto-pastes it through Alfred's own native
+Clipboard Output node — no script is involved in that step.
+`scripts/build-workflow.sh` packages the binary with `workflow/info.plist`
+and `workflow/icon.png` into a `.alfredworkflow`.
 
-```
-Alfred
-  │  keyword + query
-  ▼
-workflow/scripts/entry.py       ← Alfred boundary (UI layer)
-  │
-  ▼
-src/alfred/safe_run.py          ← Exception safety wrapper
-  │
-  ▼
-src/app/core.py                 ← Application orchestrator
-  │
-  ▼
-src/alfred/router.py            ← Command dispatcher
-  │
-  ├─ search  → src/app/commands/search.py
-  ├─ open    → src/app/commands/open_cmd.py
-  ├─ config  → src/app/commands/config_cmd.py
-  └─ help    → src/app/commands/help_cmd.py
-                │
-                ▼
-            src/app/services/   ← Business logic + caching
-                │
-                ▼
-            src/app/clients/    ← External API / IO
-```
+This structure — a thin `cmd/` entry point over independently testable
+`internal/` packages, a single dispatch function instead of a generic
+command-router abstraction, Script Filter JSON via a small `scriptfilter`
+package — deliberately matches
+[y-marui/alfred-clean-invisible-text](https://github.com/y-marui/alfred-clean-invisible-text)
+and [y-marui/alfred-password-generator](https://github.com/y-marui/alfred-password-generator),
+this author's other Alfred Workflows already implemented in Go. This
+workflow itself was originally a Python implementation
+(`src/alfred`/`src/app`, following the `alfred-workflow-template` scaffold);
+see `CHANGELOG.md`'s `[Unreleased]` entry for what changed and why in that
+rewrite.
 
-## Layers
+## Entry Points
 
-### UI Layer (`workflow/`)
+- `cmd/paste-formatted-date-alfred` — a single command, no subcommands. The
+  query it receives (e.g. `""`, `"-2d ISO"`, `"help"`) determines behavior —
+  see `internal/datecmd`'s package doc comment for the full command list.
 
-- `scripts/entry.py`: The only file Alfred executes directly.
-  - Sets up `sys.path` (vendor + src)
-  - Calls `safe_run(main)`
-  - No business logic here
+One Alfred trigger reaches it: the `date` keyword, wired in
+`workflow/info.plist`.
 
-### Alfred SDK (`src/alfred/`)
+## Directory Structure
 
-Thin helpers that abstract Alfred-specific behavior.
-These are **not** application logic — they wrap Alfred's environment.
-
-| Module | Purpose |
+| Directory | Role |
 |---|---|
-| `response.py` | Build and emit Script Filter JSON |
-| `router.py` | Parse query → dispatch to command |
-| `safe_run.py` | Catch exceptions → show error item |
-| `cache.py` | TTL disk cache via `alfred_workflow_cache` |
-| `config.py` | Persistent config via `alfred_workflow_data` |
-| `logger.py` | File logger to `~/Library/Logs/Alfred/Workflow/` |
-
-### Application Layer (`src/app/`)
-
-Pure Python business logic — no Alfred dependency.
-This layer can be tested without Alfred and run from the CLI.
-
-| Directory | Purpose |
-|---|---|
-| `commands/` | One module per Alfred command. Each has `handle(args: str) -> None` |
-| `services/` | Business logic coordinating between commands and clients |
-| `clients/` | Thin HTTP/IO wrappers for external APIs |
-| `core.py` | Wires router to commands — the dependency injection point |
+| `cmd/paste-formatted-date-alfred/` | The binary Alfred invokes; recovers panics into a Script Filter error item and writes the response |
+| `internal/datecmd/` | Query dispatch (`date` / `help`) — builds the Alfred result rows |
+| `internal/dateresolve/` | Parses a query into a target date and remaining format filter (relative offsets, direct dates), unit tested independently of Alfred |
+| `internal/datefmt/` | The list of selectable date formats and their rendering |
+| `internal/scriptfilter/` | Alfred Script Filter JSON response types |
+| `workflow/` | `info.plist` (the Alfred object graph), `icon.png` |
+| `scripts/build-workflow.sh` | Builds the universal binary and packages `workflow/` into `dist/*.alfredworkflow` |
+| `scripts/extract-changelog.sh` | Extracts one version's notes from `CHANGELOG.md` for GitHub Releases |
+| `docs/` | Architecture and Configuration Builder reference |
+| `docs/dev-charter/` | Shared dev-charter (`git subtree`) |
 
 ## Query Parsing
 
-Alfred sends the full query string to the script.
-The router splits it into `<command> <args>`:
+`internal/datecmd.Dispatch` splits the query into `<command> <rest>` on the
+first whitespace run:
 
 ```
-"search foo bar"  →  command="search",  args="foo bar"
-"open repo"       →  command="open",    args="repo"
-"config"          →  command="config",  args=""
-"foo bar"         →  command="search",  args="foo bar" (default fallback)
+""                →  command=""       →  date command, today, all formats
+"-2d ISO"         →  command="-2d"    →  unrecognized → date command, full query as args
+"help"            →  command="help"   →  help command
 ```
 
-## Dependency Flow
+Only `help` and the explicit literal `date` are registered commands;
+anything else falls back to the date command with the whole trimmed query as
+its args (so a bare filter like `"ISO"` or a relative offset like `"-2d"`
+works without a command prefix).
 
-```
-commands → services → clients → external APIs
-         ↘
-           alfred SDK (response, cache, config, logger)
-```
+## Key Dependencies
 
-Commands depend on services, not clients directly.
-Services own caching logic.
-Clients are stateless HTTP wrappers.
-
-## Packaging
-
-At build time (`make build`):
-
-```
-.build/               ← temporary build directory
-├── info.plist        ← version synced from pyproject.toml
-├── icon.png
-├── scripts/
-│   └── entry.py
-├── src/              ← copied from repo src/
-│   ├── alfred/
-│   └── app/
-└── vendor/           ← pip install -r vendor-requirements.txt -t vendor/
-```
-
-The entire `.build/` directory is zipped to `dist/<name>-<version>.alfredworkflow`.
+None. Every `internal/` package uses only the Go standard library
+(`time`, `regexp`, `encoding/json`, etc.).
 
 ## Alfred Configuration Builder (`userconfigurationconfig`)
 
 Alfred 5 の Configuration Builder は `info.plist` の `userconfigurationconfig` キーで定義する。
 利用可能な全型・各キーの詳細は [`docs/configuration-builder.md`](configuration-builder.md) を参照。
 
-### Variable Passing
-
-Alfred はスクリプト実行時に各 `variable` を環境変数として渡す。
-インストール直後は `prefs.plist` が存在しないため変数は未セットになる場合がある。
-スクリプト側で常にデフォルト値を持たせること。
-
-~~~python
-# Python
-value = os.environ.get("my_variable", "fallback")
-~~~
-
-~~~bash
-# Shell
-[ "${use_uv:-1}" = "1" ] && ...
-~~~
-
-**注意:** `checkbox` 型の unchecked 値は `"0"` ではなく空文字 `""` になる。
-`[ "$var" = "1" ]` で判定し、`"0"` との比較は避けること。
-
-### Relationship Between `variables`, `prefs.plist`, and `default`
-
-| 場所 | 役割 |
-|---|---|
-| `userconfigurationconfig[].config.default` | Configuration Builder UI の初期表示のみ。変数への書き込みは行わない。 |
-| `prefs.plist`（同ディレクトリ） | ユーザーが Configuration Builder で保存した値。Alfred が自動生成・更新する。 |
-| `info.plist` の `variables` | スクリプトに常に渡したい固定の環境変数。Configuration Builder で管理する変数はここに入れない。 |
+This workflow currently declares no Configuration Builder variables — the
+Python predecessor's `Use uv` and `Log Level` settings were scaffold
+leftovers from `alfred-workflow-template` with no equivalent need in the Go
+binary (no interpreter to select, no file logging).
