@@ -10,14 +10,11 @@
 //	date +1y              — 1 year later
 //	date 2026/7/9         — specific date (4- or 2-digit year, / or - separator)
 //	date <filter>         — filter by format name or value (e.g. "ISO", "YYYY", "unix")
-//	date config           — view current configuration
-//	date config reset     — clear all stored configuration
 //	date help             — show available commands
 package datecmd
 
 import (
 	"fmt"
-	"sort"
 	"strconv"
 	"strings"
 	"unicode"
@@ -25,7 +22,6 @@ import (
 	"github.com/y-marui/alfred-paste-formatted-date/internal/datefmt"
 	"github.com/y-marui/alfred-paste-formatted-date/internal/dateresolve"
 	"github.com/y-marui/alfred-paste-formatted-date/internal/scriptfilter"
-	"github.com/y-marui/alfred-paste-formatted-date/internal/wfconfig"
 )
 
 // Dispatch parses the raw Alfred query and routes it to the matching
@@ -36,8 +32,6 @@ func Dispatch(query string) scriptfilter.Response {
 	command, rest := splitCommand(trimmed)
 
 	switch strings.ToLower(command) {
-	case "config":
-		return handleConfig(rest)
 	case "help":
 		return handleHelp()
 	case "date":
@@ -93,76 +87,12 @@ func handleDate(args string) scriptfilter.Response {
 	return scriptfilter.Response{Items: items}
 }
 
-// handleConfig shows config items or performs a config action ("reset").
-func handleConfig(args string) scriptfilter.Response {
-	store := wfconfig.New(wfconfig.DataDir())
-	sub := strings.ToLower(strings.TrimSpace(args))
-
-	if sub == "reset" {
-		if err := store.Reset(); err != nil {
-			panic(err)
-		}
-		return scriptfilter.Response{
-			Items: []scriptfilter.Item{{
-				Title:    "Configuration reset",
-				Subtitle: "All settings have been cleared",
-				Valid:    scriptfilter.BoolPtr(false),
-			}},
-		}
-	}
-
-	resetItem := scriptfilter.Item{
-		Title:        "Reset all settings",
-		Subtitle:     "date config reset  — clear all stored configuration",
-		Arg:          "reset",
-		UID:          "config-reset",
-		Autocomplete: "config reset",
-		Valid:        scriptfilter.BoolPtr(true),
-	}
-
-	current := store.All()
-	if len(current) == 0 {
-		return scriptfilter.Response{
-			Items: []scriptfilter.Item{
-				{
-					Title:    "No settings configured",
-					Subtitle: "Settings will appear here once set",
-					Valid:    scriptfilter.BoolPtr(false),
-				},
-				resetItem,
-			},
-		}
-	}
-
-	keys := make([]string, 0, len(current))
-	for k := range current {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-
-	items := make([]scriptfilter.Item, 0, len(keys)+1)
-	for _, k := range keys {
-		v := current[k]
-		items = append(items, scriptfilter.Item{
-			Title:    fmt.Sprintf("%s: %v", k, v),
-			Subtitle: "Current setting",
-			Arg:      fmt.Sprintf("%v", v),
-			UID:      "config-" + k,
-			Valid:    scriptfilter.BoolPtr(false),
-		})
-	}
-	items = append(items, resetItem)
-
-	return scriptfilter.Response{Items: items}
-}
-
 type helpEntry struct {
 	cmd, desc, autocomplete string
 }
 
 var helpCommands = []helpEntry{
 	{"date", "List all date formats (default command)", "date "},
-	{"date config", "View or reset configuration", "date config"},
 	{"date help", "Show this help", "date help"},
 }
 

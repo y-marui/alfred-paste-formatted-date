@@ -26,7 +26,6 @@ go run ./cmd/paste-formatted-date-alfred ""            # simulate Alfred locally
 go run ./cmd/paste-formatted-date-alfred "ISO"
 go run ./cmd/paste-formatted-date-alfred "-2d"
 go run ./cmd/paste-formatted-date-alfred "2026/7/9 unix"
-go run ./cmd/paste-formatted-date-alfred "config"
 go run ./cmd/paste-formatted-date-alfred "help"
 make test                 # run test suite
 make lint                 # gofmt -l + go vet
@@ -80,7 +79,7 @@ func handleFoo(args string) scriptfilter.Response {
 | Scope | Convention | Example |
 |---|---|---|
 | Go files | one file per package concern | `datefmt.go`, `datecmd.go` |
-| Go packages | short, lowercase, no underscores | `datefmt`, `datecmd`, `dateresolve`, `wfconfig`, `scriptfilter` |
+| Go packages | short, lowercase, no underscores | `datefmt`, `datecmd`, `dateresolve`, `scriptfilter` |
 | Exported functions / types | `PascalCase` | `Resolve`, `Response`, `Item` |
 | Unexported functions / variables | `camelCase` | `handleDate`, `splitCommand` |
 | Alfred command names | lowercase | `"config"`, `"help"` |

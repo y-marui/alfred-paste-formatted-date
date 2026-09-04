@@ -28,9 +28,8 @@ rewrite.
 ## Entry Points
 
 - `cmd/paste-formatted-date-alfred` — a single command, no subcommands. The
-  query it receives (e.g. `""`, `"-2d ISO"`, `"config reset"`, `"help"`)
-  determines behavior — see `internal/datecmd`'s package doc comment for the
-  full command list.
+  query it receives (e.g. `""`, `"-2d ISO"`, `"help"`) determines behavior —
+  see `internal/datecmd`'s package doc comment for the full command list.
 
 One Alfred trigger reaches it: the `date` keyword, wired in
 `workflow/info.plist`.
@@ -40,10 +39,9 @@ One Alfred trigger reaches it: the `date` keyword, wired in
 | Directory | Role |
 |---|---|
 | `cmd/paste-formatted-date-alfred/` | The binary Alfred invokes; recovers panics into a Script Filter error item and writes the response |
-| `internal/datecmd/` | Query dispatch (`date` / `config` / `help`) — builds the Alfred result rows |
+| `internal/datecmd/` | Query dispatch (`date` / `help`) — builds the Alfred result rows |
 | `internal/dateresolve/` | Parses a query into a target date and remaining format filter (relative offsets, direct dates), unit tested independently of Alfred |
 | `internal/datefmt/` | The list of selectable date formats and their rendering |
-| `internal/wfconfig/` | Persistent key/value store for the `config` command, backed by a JSON file in Alfred's workflow data directory |
 | `internal/scriptfilter/` | Alfred Script Filter JSON response types |
 | `workflow/` | `info.plist` (the Alfred object graph), `icon.png` |
 | `scripts/build-workflow.sh` | Builds the universal binary and packages `workflow/` into `dist/*.alfredworkflow` |
@@ -59,14 +57,13 @@ first whitespace run:
 ```
 ""                →  command=""       →  date command, today, all formats
 "-2d ISO"         →  command="-2d"    →  unrecognized → date command, full query as args
-"config reset"    →  command="config" →  config command, args="reset"
 "help"            →  command="help"   →  help command
 ```
 
-Only `config`, `help`, and the explicit literal `date` are registered
-commands; anything else falls back to the date command with the whole
-trimmed query as its args (so a bare filter like `"ISO"` or a relative
-offset like `"-2d"` works without a command prefix).
+Only `help` and the explicit literal `date` are registered commands;
+anything else falls back to the date command with the whole trimmed query as
+its args (so a bare filter like `"ISO"` or a relative offset like `"-2d"`
+works without a command prefix).
 
 ## Key Dependencies
 

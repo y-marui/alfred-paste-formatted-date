@@ -28,10 +28,9 @@ Go（サードパーティ依存なし）、`cmd/`+`internal/` レイアウト�
 
 ```
 cmd/paste-formatted-date-alfred/  ← Alfred が実行する唯一のバイナリ
-internal/datecmd/                 ← コマンドディスパッチ（date / config / help）
+internal/datecmd/                 ← コマンドディスパッチ（date / help）
 internal/dateresolve/             ← クエリ → 対象日付の解決（相対オフセット・直接指定）
 internal/datefmt/                 ← 日付フォーマット一覧・整形ロジック
-internal/wfconfig/                ← config コマンド用の永続キー/バリューストア
 internal/scriptfilter/            ← Alfred Script Filter JSON 型
 workflow/                         ← Alfred パッケージ（info.plist / icon.png）
 scripts/                          ← build-workflow.sh / extract-changelog.sh
@@ -213,8 +212,8 @@ Alfred ワークフローは現時点では UI テキストのローカライゼ
 
 ### Testing Conventions
 
-- `internal/dateresolve/`・`internal/datecmd/`・`internal/wfconfig/` をテスト対象とする（`go test ./...`）
-- 外部 I/O は行わない（`internal/wfconfig` のファイル I/O はテストでは `t.TempDir()` を明示的に渡して隔離する）
+- `internal/dateresolve/`・`internal/datecmd/` をテスト対象とする（`go test ./...`）
+- 外部 I/O は行わない
 - 日付・時刻に依存するテストは `time.Now()` からの相対比較で書く（固定日付とのハードコード比較を避ける）
 
 詳細な開発フロー・命名規則・コードレビュー手順は `DEVELOPING.md` を参照する。

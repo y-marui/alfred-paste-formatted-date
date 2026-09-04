@@ -18,7 +18,6 @@ Alfred で `date` と入力するとフォーマット一覧が表示されま�
 ```
 date             — フォーマット一覧を表示
 date <filter>    — フォーマット名や値で絞り込み（例: "ISO", "YYYY", "unix"）
-date config      — 設定の確認 / リセット
 date help        — コマンド一覧を表示
 ```
 
@@ -69,10 +68,9 @@ alfred-paste-formatted-date/
 ├── cmd/
 │   └── paste-formatted-date-alfred/  # Alfred が実行するバイナリ
 ├── internal/
-│   ├── datecmd/         # コマンドディスパッチ (date / config / help)
+│   ├── datecmd/         # コマンドディスパッチ (date / help)
 │   ├── dateresolve/     # クエリ → 対象日付の解決
 │   ├── datefmt/         # 日付フォーマット一覧・整形
-│   ├── wfconfig/        # 永続設定ストア
 │   └── scriptfilter/    # Alfred Script Filter JSON 型
 ├── workflow/            # Alfred パッケージ (info.plist, icon.png)
 └── docs/                # アーキテクチャドキュメント

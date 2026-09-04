@@ -18,7 +18,6 @@ Type `date` in Alfred to see all available formats. Select one to copy and auto-
 ```
 date             — list all formats
 date <filter>    — filter by format name or value (e.g. "ISO", "YYYY", "unix")
-date config      — view or reset configuration
 date help        — show available commands
 ```
 
@@ -69,10 +68,9 @@ alfred-paste-formatted-date/
 ├── cmd/
 │   └── paste-formatted-date-alfred/  # The binary Alfred invokes
 ├── internal/
-│   ├── datecmd/         # Command dispatch (date / config / help)
+│   ├── datecmd/         # Command dispatch (date / help)
 │   ├── dateresolve/     # Query → target date parsing
 │   ├── datefmt/         # Date format table + rendering
-│   ├── wfconfig/        # Persistent config store
 │   └── scriptfilter/    # Alfred Script Filter JSON types
 ├── workflow/            # Alfred package (info.plist, icon.png)
 └── docs/                # Architecture documentation

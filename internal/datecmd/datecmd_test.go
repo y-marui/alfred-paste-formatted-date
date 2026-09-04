@@ -5,14 +5,7 @@ import (
 	"testing"
 
 	"github.com/y-marui/alfred-paste-formatted-date/internal/datefmt"
-	"github.com/y-marui/alfred-paste-formatted-date/internal/wfconfig"
 )
-
-func setupConfigEnv(t *testing.T) {
-	t.Helper()
-	t.Setenv("alfred_workflow_data", t.TempDir())
-	t.Setenv("alfred_workflow_bundleid", "com.example.test")
-}
 
 func TestDateEmptyQueryReturnsAllFormats(t *testing.T) {
 	resp := Dispatch("")
@@ -107,63 +100,6 @@ func TestDateDirectDateISOValue(t *testing.T) {
 	}
 	if !found {
 		t.Fatal("no YYYY-MM-DD item found")
-	}
-}
-
-func TestConfigEmptyShowsNoSettings(t *testing.T) {
-	setupConfigEnv(t)
-	resp := Dispatch("config")
-	found := false
-	for _, it := range resp.Items {
-		if strings.Contains(it.Title, "No settings") {
-			found = true
-		}
-	}
-	if !found {
-		t.Errorf("expected a 'No settings' item, got %+v", resp.Items)
-	}
-}
-
-func TestConfigResetClearsConfig(t *testing.T) {
-	setupConfigEnv(t)
-	store := wfconfig.New(wfconfig.DataDir())
-	if err := store.Set("key", "value"); err != nil {
-		t.Fatal(err)
-	}
-
-	resp := Dispatch("config reset")
-	if len(resp.Items) == 0 || !strings.Contains(strings.ToLower(resp.Items[0].Title), "reset") {
-		t.Errorf("expected a reset confirmation item, got %+v", resp.Items)
-	}
-	if all := store.All(); len(all) != 0 {
-		t.Errorf("config not cleared: %v", all)
-	}
-}
-
-func TestConfigShowsExistingSettings(t *testing.T) {
-	setupConfigEnv(t)
-	store := wfconfig.New(wfconfig.DataDir())
-	if err := store.Set("some_key", "some_value"); err != nil {
-		t.Fatal(err)
-	}
-
-	resp := Dispatch("config")
-	found := false
-	for _, it := range resp.Items {
-		if strings.Contains(it.Title, "some_key") {
-			found = true
-		}
-	}
-	if !found {
-		t.Errorf("expected an item mentioning some_key, got %+v", resp.Items)
-	}
-}
-
-func TestConfigUnknownSubcommandShowsCurrentConfig(t *testing.T) {
-	setupConfigEnv(t)
-	resp := Dispatch("config unknown-subcommand")
-	if len(resp.Items) == 0 {
-		t.Error("expected at least one item")
 	}
 }
 
