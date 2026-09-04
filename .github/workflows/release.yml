@@ -20,23 +20,20 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: astral-sh/setup-uv@v10.0.1
+      - uses: actions/setup-go@v7
         with:
-          enable-cache: true
-
-      - name: Install dev dependencies
-        run: uv sync --extra dev
+          go-version-file: go.mod
 
       - name: Run tests
-        run: uv run pytest --tb=short
+        run: go test ./...
 
       - name: Build .alfredworkflow
-        run: USE_UV=1 ./scripts/build.sh
+        run: make build-workflow
 
       - name: Extract release notes from CHANGELOG.md
         id: changelog
         run: |
-          NOTES=$(uv run python scripts/extract_changelog.py "$GITHUB_REF_NAME")
+          NOTES=$(scripts/extract-changelog.sh "$GITHUB_REF_NAME")
           {
             echo "notes<<CHANGELOG_EOF"
             echo "$NOTES"

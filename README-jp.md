@@ -40,7 +40,6 @@ date help        — コマンド一覧を表示
 ## Requirements
 
 - Alfred 5（Script Filter には Powerpack が必要）
-- Python 3.9+
 
 ## Installation
 
@@ -48,33 +47,35 @@ date help        — コマンド一覧を表示
 
 ## Development
 
-```bash
-# 開発用依存関係をインストール
-make install
+Go が必要です（ツールチェーンのバージョンは `go.mod` を参照）。開発フロー全体は [DEVELOPING.md](DEVELOPING.md) を参照してください。
 
+```bash
 # Alfred をローカルでシミュレート
-make run Q=""
-make run Q="ISO"
+go run ./cmd/paste-formatted-date-alfred ""
+go run ./cmd/paste-formatted-date-alfred "ISO"
 
 # テストを実行
 make test
 
 # ワークフローパッケージをビルド
-make build
-# → dist/alfred-paste-formatted-date-0.1.0.alfredworkflow
+make build-workflow
+# → dist/paste-formatted-date-0.1.0.alfredworkflow
 ```
 
 ## Project Structure
 
 ```
 alfred-paste-formatted-date/
-├── src/
-│   ├── alfred/         # Alfred SDK (response, router, cache, config, logger, safe_run)
-│   └── app/            # アプリケーション層 (commands)
-├── workflow/           # Alfred パッケージ (info.plist, scripts/entry.py, vendor/)
-├── tests/              # pytest テストスイート
-├── scripts/            # build.sh, dev.sh, release.sh, vendor.sh
-└── docs/               # アーキテクチャ・開発ドキュメント
+├── cmd/
+│   └── paste-formatted-date-alfred/  # Alfred が実行するバイナリ
+├── internal/
+│   ├── datecmd/         # コマンドディスパッチ (date / config / help)
+│   ├── dateresolve/     # クエリ → 対象日付の解決
+│   ├── datefmt/         # 日付フォーマット一覧・整形
+│   ├── wfconfig/        # 永続設定ストア
+│   └── scriptfilter/    # Alfred Script Filter JSON 型
+├── workflow/            # Alfred パッケージ (info.plist, icon.png)
+└── docs/                # アーキテクチャドキュメント
 ```
 
 ## License
