@@ -77,7 +77,14 @@ func tryRelative(q string) (time.Time, bool) {
 	if m[1] == "-" {
 		sign = -1
 	}
-	amount, _ := strconv.Atoi(m[2])
+	// The regex allows arbitrarily many digits, so an offset larger than the
+	// platform int range must be rejected here rather than silently used —
+	// strconv.Atoi's saturated error value would otherwise flow into the
+	// arithmetic below and resolve to a plausible-looking but wrong date.
+	amount, err := strconv.Atoi(m[2])
+	if err != nil {
+		return time.Time{}, false
+	}
 	amount *= sign
 	unit := strings.ToLower(m[3])
 	if unit == "" {

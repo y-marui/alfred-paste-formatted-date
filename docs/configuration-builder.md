@@ -15,23 +15,25 @@ Each entry in `userconfigurationconfig` is a dict with these top-level keys:
 | `description` | no | Help text shown below the widget |
 | `config` | yes | Type-specific settings (see per-type tables) |
 
-Variable names in this project use **lowercase with underscores** (e.g. `use_uv`, `log_level`).
+Variable names should use **lowercase with underscores** (e.g. `cache_ttl`).
 
 ## How variables reach scripts
 
 Alfred sets each `variable` as an environment variable before running the script.
-Access them in Python via `os.environ.get("variable_name", default)`.
+Read it via `os.Getenv("variable_name")`, with an explicit fallback since the variable
+may be unset before the user first opens Alfred Preferences:
 
-```python
-import os
-
-value = os.environ.get("my_variable", "fallback")
+```go
+value := os.Getenv("my_variable")
+if value == "" {
+	value = "fallback"
+}
 ```
 
 Checkbox values are `"1"` (checked) or `""` empty string (unchecked) — not `"true"`/`"false"`.
 
-```python
-enabled = os.environ.get("use_uv", "") == "1"
+```go
+enabled := os.Getenv("my_flag") == "1"
 ```
 
 ---
@@ -105,15 +107,15 @@ Boolean toggle. Variable value: `"1"` (checked) or `""` (unchecked).
 ```xml
 <dict>
     <key>type</key>      <string>checkbox</string>
-    <key>label</key>     <string>Use uv</string>
-    <key>variable</key>  <string>use_uv</string>
+    <key>label</key>     <string>Verbose Output</string>
+    <key>variable</key>  <string>verbose</string>
     <key>description</key>
-    <string>When enabled and uv is installed, scripts run via uv.</string>
+    <string>When enabled, show additional detail in results.</string>
     <key>config</key>
     <dict>
-        <key>default</key>  <true/>
+        <key>default</key>  <false/>
         <key>required</key> <false/>
-        <key>text</key>     <string>Use uv instead of python3 when available</string>
+        <key>text</key>     <string>Enable verbose output</string>
     </dict>
 </dict>
 ```
@@ -124,7 +126,7 @@ Boolean toggle. Variable value: `"1"` (checked) or `""` (unchecked).
 | `required` | bool | (rarely used for checkboxes) |
 | `text` | string | Inline label shown next to the checkbox |
 
-In scripts, test with `[ "${use_uv:-0}" = "1" ]` (shell) or `os.environ.get("use_uv") == "1"` (Python).
+In scripts, test with `[ "${verbose:-0}" = "1" ]` (shell) or `os.Getenv("verbose") == "1"` (Go).
 
 ---
 
@@ -226,19 +228,17 @@ Numeric range picker. Variable value is an integer string.
 | `showmarkers` | bool | Show tick marks |
 | `onlystoponmarkers` | bool | Snap to tick positions only |
 
-Value is passed as an integer string: `os.environ.get("result_count", "5")` → `"5"`.
+Value is passed as an integer string: `os.Getenv("result_count")` → `"5"`.
 
 ---
 
 ## This project's configuration
 
-| Variable | Type | Default | Description |
-|---|---|---|---|
-| `use_uv` | checkbox | `true` | Use `uv run` when uv is installed |
-| `log_level` | select | `WARNING` | Log verbosity (`DEBUG` / `INFO` / `WARNING` / `ERROR`) |
-| `cache_ttl` | textfield | `300` | API cache lifetime in seconds |
-| `api_base_url` | textfield | `https://api.example.com/v1` | API endpoint base URL |
-| `api_timeout` | textfield | `5` | HTTP request timeout in seconds |
+This workflow currently declares **no** Configuration Builder variables — the Python
+predecessor's `use_uv` (interpreter selection) and `log_level` (file logging verbosity)
+settings had no equivalent need once the workflow shipped as a compiled Go binary (see
+`docs/architecture.md`). The type reference above exists for when a real setting is
+added in the future.
 
 ## References
 

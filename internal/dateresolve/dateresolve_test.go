@@ -150,6 +150,18 @@ func TestResolveDirectDateMidnight(t *testing.T) {
 	}
 }
 
+func TestResolveOverflowingRelativeOffsetPassthrough(t *testing.T) {
+	q := "+999999999999999999999999999999d"
+	dt, remaining := Resolve(q)
+	y, m, d := today()
+	if !sameDate(dt, y, m, d) {
+		t.Errorf("got %v, want today (offset overflows int and must not silently resolve)", dt)
+	}
+	if remaining != q {
+		t.Errorf("remaining = %q, want %q", remaining, q)
+	}
+}
+
 func TestResolveInvalidDatePassthrough(t *testing.T) {
 	dt, remaining := Resolve("2026/13/1")
 	y, m, d := today()
