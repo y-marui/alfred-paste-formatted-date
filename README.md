@@ -13,7 +13,8 @@ Generate and paste today's date in multiple formats via Alfred 5.
 
 ## Usage
 
-Type `date` in Alfred to see all available formats. Select one to copy and auto-paste it.
+List today's date in multiple formats via the `date` keyword, then select
+one to copy and auto-paste it.
 
 ```
 date             — list all formats

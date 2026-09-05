@@ -15,6 +15,7 @@ AI はタスク開始時に以下の順で参照する:
 - `CONTRIBUTING.md`（PR・Issue ルール）
 - `docs/architecture.md`（モジュール・コンポーネント構造）
 - `docs/configuration-builder.md`（Alfred Configuration Builder 型リファレンス）
+- `docs/alfred-gallery-readiness.md`（Alfred Gallery 提出基準のチェックリストと未対応項目）
 
 不明点は `docs/dev-charter/CHARTER_INDEX.md` → 該当ファイルの順で参照する。
 
