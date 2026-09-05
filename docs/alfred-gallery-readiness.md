@@ -26,6 +26,7 @@ that submission is not blocked on our side whenever that step happens.
 | No self-installed external software | ✅ Done | `go.mod` has no third-party dependencies; nothing is fetched at runtime |
 | Icon ≥ 256×256 px | ✅ Done | `workflow/icon.png` is 376×376 |
 | Keyword ≥ 3 characters | ✅ Done | `date` (4 characters) |
+| Category set | ✅ Done | `Productivity` — see [`docs/alfred-workflow-notes/workflow-object-schema.md`](docs/alfred-workflow-notes/workflow-object-schema.md#category) for the valid value list |
 | User Configuration over environment variables | ✅ N/A | No Config Builder variables are declared today |
 | English instructions in About/README | ✅ Done | `README.md` is the reference (English) version; `README-jp.md` is canonical |
 | README follows Gallery style guide | ✅ Done | `## Usage` opens with "via the `date` keyword" phrasing |
