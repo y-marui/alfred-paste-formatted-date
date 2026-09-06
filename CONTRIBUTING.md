@@ -22,6 +22,11 @@ git commit -m "chore: release v1.2.3"
 git tag v1.2.3
 git push origin main --tags
 # GitHub Actions builds .alfredworkflow and creates a GitHub Release
+
+# If Actions can't run (e.g. a billing/spending-limit issue), cut the
+# release from this machine instead — same build, same GitHub Release,
+# just triggered locally:
+make release
 ```
 
 ## Security
