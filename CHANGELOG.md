@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Gallery-style screenshot of the `date` keyword entry point in README/README-jp.
+
 ### Changed
 
 - Rewrote the implementation from Python to Go, matching the `cmd/`+`internal/`

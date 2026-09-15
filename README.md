@@ -16,6 +16,8 @@ Generate and paste today's date in multiple formats via Alfred 5.
 List today's date in multiple formats via the `date` keyword, then select
 one to copy and auto-paste it.
 
+![date keyword format list](images/date.png)
+
 ```
 date             — list all formats
 date <filter>    — filter by format name or value (e.g. "ISO", "YYYY", "unix")
