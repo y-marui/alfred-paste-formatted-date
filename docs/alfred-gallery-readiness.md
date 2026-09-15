@@ -21,7 +21,7 @@ that submission is not blocked on our side whenever that step happens.
 
 | Requirement | Status | Notes |
 |---|---|---|
-| Binaries signed and notarised | ⏳ Pending | `.github/workflows/release.yml` has the signing/notarization steps, but no tag has been pushed yet — unverified until a real release ships. Tracked in [#33](https://github.com/y-marui/alfred-paste-formatted-date/issues/33) |
+| Binaries signed and notarised | ✅ Done | Binary verified signed/notarised in the actual [v0.1.0 release](https://github.com/y-marui/alfred-paste-formatted-date/releases/tag/v0.1.0) (`codesign -dvvv`, `spctl -a -vvv -t install`, `gh attestation verify`) |
 | No self-update | ✅ Done | Updates ship only as new `.alfredworkflow` releases; no self-update code path |
 | No self-installed external software | ✅ Done | `go.mod` has no third-party dependencies; nothing is fetched at runtime |
 | Icon ≥ 256×256 px | ✅ Done | `workflow/icon.png` is 376×376 |
