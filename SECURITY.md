@@ -2,38 +2,19 @@
 
 ## Supported Versions
 
-Only the latest release is supported with security fixes.
+Only the latest release (or the default branch, if there are no releases)
+receives security fixes.
 
 ## Reporting a Vulnerability
 
-Please **do not** open a public GitHub issue for security vulnerabilities.
+Please do not report security vulnerabilities in public issues, pull
+requests, or discussions.
 
-Instead, report them privately via
-[GitHub Security Advisories](https://github.com/y-marui/alfred-paste-formatted-date/security/advisories/new)
-or email the maintainer directly.
+If private vulnerability reporting is enabled for this repository, use
+"Report a vulnerability" on the Security tab. Otherwise, open an issue
+asking for a private contact channel, without including any details of
+the vulnerability.
 
-We aim to acknowledge reports within 48 hours and provide a fix within 7 days
-for confirmed vulnerabilities.
+## What to Expect
 
-## Scope
-
-Common areas of concern:
-
-- **Credential handling** — never store secrets in `workflow/info.plist` or
-  committed files; use Alfred's built-in encrypted keychain instead.
-- **Input sanitization** — Alfred query strings are passed to
-  `cmd/paste-formatted-date-alfred`; they must not be interpolated into shell
-  commands or SQL without sanitization.
-- **Dependency security** — this project has no third-party Go dependencies
-  by design; dependabot monitors `.github/workflows/` automatically.
-
-## Automated security checks
-
-| Hook | What it detects |
-|---|---|
-| `gitleaks` (`.gitleaks.toml`) | Hardcoded secrets, API keys, local absolute paths |
-| `detect-private-key` | SSH/TLS private key headers |
-| `no-commit-dotenv` | `.env` files accidentally staged |
-| `check-added-large-files` | Files over 500 KB |
-
-These hooks run on every commit (pre-commit) and in CI (`security` job).
+Reports are handled on a best-effort basis. No response time is guaranteed.

@@ -31,20 +31,9 @@ make release
 
 ## Security
 
-### Supported Versions
-
-Only the latest release is supported with security fixes.
-
 ### Reporting a Vulnerability
 
-Please **do not** open a public GitHub issue for security vulnerabilities.
-
-Instead, report them privately via
-[GitHub Security Advisories](https://github.com/y-marui/alfred-paste-formatted-date/security/advisories/new)
-or email the maintainer directly.
-
-We aim to acknowledge reports within 48 hours and provide a fix within 7 days
-for confirmed vulnerabilities.
+See [SECURITY.md](SECURITY.md).
 
 ### Scope
 
