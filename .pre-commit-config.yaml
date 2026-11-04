@@ -76,6 +76,21 @@ repos:
             \.pre-commit-config\.yaml$
           )
 
+  # ----------------------------------------------------------------
+  # Block commits on the default branch
+  # (server-side Ruleset only stops direct pushes; this catches local
+  # commits onto main/master before that point — see CI_POLICY.md
+  # Branch Protection (Ruleset))
+  # ----------------------------------------------------------------
+  - repo: local
+    hooks:
+      - id: check-not-on-default-branch
+        name: Block commits on the default branch
+        language: script
+        entry: scripts/check-not-on-default-branch.sh
+        pass_filenames: false
+        always_run: true
+
 
   # ----------------------------------------------------------------
   # Local dev-charter version check
@@ -101,7 +116,7 @@ repos:
       - id: check-charter-subtree-edit
         name: Block direct edits under dev-charter subtree
         language: script
-        entry: scripts/check-subtree-edit.sh
+        entry: scripts/check-charter-subtree-edit.sh
         pass_filenames: false
         always_run: true
       - id: check-workflow-notes-subtree-edit
@@ -112,17 +127,19 @@ repos:
         always_run: true
 
   # ----------------------------------------------------------------
-  # Block commits on the default branch
-  # (server-side Ruleset only stops direct pushes; this catches local
-  # commits onto main/master before that point — see CI_POLICY.md
-  # Branch Protection (Ruleset))
+  # UPDATE_CHECKLIST sign check (pre-push only)
+  # (a diff that only touches the dev-charter subtree must carry a
+  # `Update-Checklist: done` trailer commit, or also change a file outside
+  # the subtree. Not run at commit time: `git subtree pull` commits only
+  # touch the subtree. Needs `pre-commit install --hook-type pre-push`)
   # ----------------------------------------------------------------
   - repo: local
     hooks:
-      - id: check-not-on-default-branch
-        name: Block commits on the default branch
+      - id: check-update-checklist
+        name: Check UPDATE_CHECKLIST was run
         language: script
-        entry: scripts/check-not-on-default-branch.sh
+        entry: scripts/check-update-checklist.sh
+        stages: [pre-push]
         pass_filenames: false
         always_run: true
 
@@ -203,6 +220,20 @@ repos:
         name: Check AI_CONTEXT.md reference
         language: script
         entry: scripts/check-ai-context-reference.sh
+        pass_filenames: false
+        always_run: true
+
+  # ----------------------------------------------------------------
+  # Hook script existence (SECURITY_POLICY.md)
+  # (scripts referenced by entry: must exist and be executable, and
+  # helper scripts installed as a pair with a hook must be present)
+  # ----------------------------------------------------------------
+  - repo: local
+    hooks:
+      - id: check-hook-scripts
+        name: Check hook scripts exist
+        language: script
+        entry: scripts/check-hook-scripts.sh
         pass_filenames: false
         always_run: true
 
@@ -317,9 +348,9 @@ repos:
           ' --
         files: '\.ps1$'
         # Adopting projects install this subtree read-only (see
-        # check-subtree-edit.sh); its own scripts/*.ps1 aren't
+        # check-charter-subtree-edit.sh); its own scripts/*.ps1 aren't
         # something the adopter can fix, so skip them by default. Assumes
-        # the default SUBTREE_PREFIX (docs/dev-charter) — adjust this
+        # the default CHARTER_PREFIX (docs/dev-charter) — adjust this
         # pattern if installed elsewhere.
         exclude: '^docs/dev-charter/'
         require_serial: true
