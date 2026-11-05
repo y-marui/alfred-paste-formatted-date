@@ -1,7 +1,7 @@
 # Paste Formatted Date
 
-> **This is the English (reference) version.**
-> For the Japanese canonical version, see [README-jp.md](README-jp.md).
+> **This is the reference (English) version.**
+> The canonical (Japanese) version is [README-jp.md](README-jp.md).
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![CI](https://github.com/y-marui/alfred-paste-formatted-date/actions/workflows/ci.yml/badge.svg)](https://github.com/y-marui/alfred-paste-formatted-date/actions/workflows/ci.yml)
@@ -18,6 +18,21 @@ Generate and paste today's date in multiple formats via Alfred 5.
 ## Installation
 
 Download the latest `.alfredworkflow` from [Releases](https://github.com/y-marui/alfred-paste-formatted-date/releases) and double-click to install.
+
+## Project Structure
+
+```
+alfred-paste-formatted-date/
+├── cmd/
+│   └── paste-formatted-date-alfred/  # The binary Alfred invokes
+├── internal/
+│   ├── datecmd/         # Command dispatch (date / help)
+│   ├── dateresolve/     # Query → target date parsing
+│   ├── datefmt/         # Date format table + rendering
+│   └── scriptfilter/    # Alfred Script Filter JSON types
+├── workflow/            # Alfred package (info.plist, icon.png)
+└── docs/                # Architecture documentation
+```
 
 ## Usage
 
@@ -47,6 +62,15 @@ date help        — show available commands
 | YYYY-MM-DDThh:mm:ss | 2026-04-14T12:00:00 |
 | Unix timestamp | 1744588800 |
 
+## Documentation
+
+| Document | Description |
+|---|---|
+| [docs/specification.md](docs/specification.md) | Functional specification and data flow |
+| [docs/architecture.md](docs/architecture.md) | Architecture and layer design |
+| [docs/ui-design.md](docs/ui-design.md) | Alfred result item UI conventions |
+| [docs/file-map.md](docs/file-map.md) | File-level dependency map |
+
 ## Development
 
 Requires Go (see `go.mod` for the toolchain version) — see [DEVELOPING.md](DEVELOPING.md) for the full workflow.
@@ -64,25 +88,9 @@ make build-workflow
 # → dist/paste-formatted-date-0.1.0.alfredworkflow
 ```
 
-## Project Structure
-
-```
-alfred-paste-formatted-date/
-├── cmd/
-│   └── paste-formatted-date-alfred/  # The binary Alfred invokes
-├── internal/
-│   ├── datecmd/         # Command dispatch (date / help)
-│   ├── dateresolve/     # Query → target date parsing
-│   ├── datefmt/         # Date format table + rendering
-│   └── scriptfilter/    # Alfred Script Filter JSON types
-├── workflow/            # Alfred package (info.plist, icon.png)
-└── docs/                # Architecture documentation
-```
-
 ## License
 
 MIT — see [LICENSE](LICENSE)
 
 ---
-
-*This is the reference (English) version. The canonical Japanese version is [README-jp.md](README-jp.md). Update both files in the same commit.*
+*This document has a Japanese canonical version [README-jp.md](README-jp.md). Update both in the same commit when editing.*

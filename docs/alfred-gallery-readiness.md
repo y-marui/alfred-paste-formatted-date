@@ -3,7 +3,7 @@
 Tracks this Workflow's compliance with the
 [Alfred Gallery submission requirements](https://alfred.app/submit/) and
 [style guide](https://alfred.app/submit/styleguide/), per dev-charter's
-[`topics/alfred/ALFRED_GALLERY.md`](docs/dev-charter/topics/alfred/ALFRED_GALLERY.md).
+[`topics/alfred/ALFRED_GALLERY.md`](dev-charter/topics/alfred/ALFRED_GALLERY.md).
 This is a checklist against an external, occasionally-changing policy —
 re-read the linked pages before acting on stale entries here.
 
@@ -26,7 +26,7 @@ that submission is not blocked on our side whenever that step happens.
 | No self-installed external software | ✅ Done | `go.mod` has no third-party dependencies; nothing is fetched at runtime |
 | Icon ≥ 256×256 px | ✅ Done | `workflow/icon.png` is 376×376 |
 | Keyword ≥ 3 characters | ✅ Done | `date` (4 characters) |
-| Category set | ✅ Done | `Productivity` — see [`docs/alfred-workflow-notes/workflow-object-schema.md`](docs/alfred-workflow-notes/workflow-object-schema.md#category) for the valid value list |
+| Category set | ✅ Done | `Productivity` — see [`docs/alfred-workflow-notes/workflow-object-schema.md`](alfred-workflow-notes/workflow-object-schema.md#category) for the valid value list |
 | User Configuration over environment variables | ✅ N/A | No Config Builder variables are declared today |
 | English instructions in About/README | ✅ Done | `README.md` is the reference (English) version; `README-jp.md` is canonical |
 | README follows Gallery style guide | ✅ Done | `## Usage` opens with "via the `date` keyword" phrasing |
