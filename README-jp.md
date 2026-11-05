@@ -1,6 +1,6 @@
 # Paste Formatted Date
 
-> **これは日本語版（正本）です。**
+> **このファイルは正本（日本語版）です。**
 > 英語版（参照）は [README.md](README.md) を参照してください。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -18,6 +18,21 @@ Alfred 5 から今日の日付を複数のフォーマットで生成・貼り�
 ## Installation
 
 [Releases](https://github.com/y-marui/alfred-paste-formatted-date/releases) から最新の `.alfredworkflow` をダウンロードしてダブルクリックでインストールします。
+
+## Project Structure
+
+```
+alfred-paste-formatted-date/
+├── cmd/
+│   └── paste-formatted-date-alfred/  # Alfred が実行するバイナリ
+├── internal/
+│   ├── datecmd/         # コマンドディスパッチ (date / help)
+│   ├── dateresolve/     # クエリ → 対象日付の解決
+│   ├── datefmt/         # 日付フォーマット一覧・整形
+│   └── scriptfilter/    # Alfred Script Filter JSON 型
+├── workflow/            # Alfred パッケージ (info.plist, icon.png)
+└── docs/                # アーキテクチャドキュメント
+```
 
 ## Usage
 
@@ -47,6 +62,15 @@ date help        — コマンド一覧を表示
 | YYYY-MM-DDThh:mm:ss | 2026-04-14T12:00:00 |
 | Unix timestamp | 1744588800 |
 
+## Documentation
+
+| ドキュメント | 内容 |
+|---|---|
+| [docs/specification.md](docs/specification.md) | 機能仕様とデータフロー |
+| [docs/architecture.md](docs/architecture.md) | アーキテクチャとレイヤー設計 |
+| [docs/ui-design.md](docs/ui-design.md) | Alfred 結果アイテムの UI 規約 |
+| [docs/file-map.md](docs/file-map.md) | ファイル単位の依存関係 |
+
 ## Development
 
 Go が必要です（ツールチェーンのバージョンは `go.mod` を参照）。開発フロー全体は [DEVELOPING.md](DEVELOPING.md) を参照してください。
@@ -64,25 +88,9 @@ make build-workflow
 # → dist/paste-formatted-date-0.1.0.alfredworkflow
 ```
 
-## Project Structure
-
-```
-alfred-paste-formatted-date/
-├── cmd/
-│   └── paste-formatted-date-alfred/  # Alfred が実行するバイナリ
-├── internal/
-│   ├── datecmd/         # コマンドディスパッチ (date / help)
-│   ├── dateresolve/     # クエリ → 対象日付の解決
-│   ├── datefmt/         # 日付フォーマット一覧・整形
-│   └── scriptfilter/    # Alfred Script Filter JSON 型
-├── workflow/            # Alfred パッケージ (info.plist, icon.png)
-└── docs/                # アーキテクチャドキュメント
-```
-
 ## License
 
 MIT — [LICENSE](LICENSE) を参照
 
 ---
-
-*この文書には英語版（参照版）[README.md](README.md) があります。編集時は同一コミットで更新してください。*
+*この文書には英語版 [README.md](README.md) があります。編集時は同一コミットで更新してください。*
