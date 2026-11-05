@@ -11,6 +11,14 @@
 
 Generate and paste today's date in multiple formats via Alfred 5.
 
+## Requirements
+
+- Alfred 5 (Powerpack required for Script Filter)
+
+## Installation
+
+Download the latest `.alfredworkflow` from [Releases](https://github.com/y-marui/alfred-paste-formatted-date/releases) and double-click to install.
+
 ## Usage
 
 List today's date in multiple formats via the `date` keyword, then select
@@ -38,14 +46,6 @@ date help        — show available commands
 | MMMM DD, YYYY | April 14, 2026 |
 | YYYY-MM-DDThh:mm:ss | 2026-04-14T12:00:00 |
 | Unix timestamp | 1744588800 |
-
-## Requirements
-
-- Alfred 5 (Powerpack required for Script Filter)
-
-## Installation
-
-Download the latest `.alfredworkflow` from [Releases](https://github.com/y-marui/alfred-paste-formatted-date/releases) and double-click to install.
 
 ## Development
 
