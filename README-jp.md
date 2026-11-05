@@ -11,6 +11,14 @@
 
 Alfred 5 から今日の日付を複数のフォーマットで生成・貼り付けするワークフロー。
 
+## Requirements
+
+- Alfred 5（Script Filter には Powerpack が必要）
+
+## Installation
+
+[Releases](https://github.com/y-marui/alfred-paste-formatted-date/releases) から最新の `.alfredworkflow` をダウンロードしてダブルクリックでインストールします。
+
 ## Usage
 
 `date` キーワードで今日の日付を複数フォーマットで一覧表示し、選択すると
@@ -38,14 +46,6 @@ date help        — コマンド一覧を表示
 | MMMM DD, YYYY | April 14, 2026 |
 | YYYY-MM-DDThh:mm:ss | 2026-04-14T12:00:00 |
 | Unix timestamp | 1744588800 |
-
-## Requirements
-
-- Alfred 5（Script Filter には Powerpack が必要）
-
-## Installation
-
-[Releases](https://github.com/y-marui/alfred-paste-formatted-date/releases) から最新の `.alfredworkflow` をダウンロードしてダブルクリックでインストールします。
 
 ## Development
 
